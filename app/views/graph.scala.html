@@ -1,0 +1,108 @@
+@(title: String, json: String)
+
+<!DOCTYPE html>
+
+<html>
+    <head>
+        <title>@title</title>
+        <link rel="shortcut icon" type="image/png" href="@routes.Assets.at("images/favicon.png")">
+        <link rel='stylesheet' href='@routes.WebJarAssets.at(WebJarAssets.locate("bootstrap.min.css"))'>
+        <script type='text/javascript' src='@routes.WebJarAssets.at(WebJarAssets.locate("jquery.min.js"))'></script>
+
+        <script type='text/javascript' src='@routes.Assets.at("javascripts/Chart.js")'></script>
+
+        <style>
+
+            #container {
+
+                margin-top: 5%;
+
+
+            }
+
+        </style>
+
+    </head>
+
+    <body>
+        <div id="container">
+
+            <div id="header">
+                <div class="navbar navbar-fixed-top">
+                    <div class="navbar-inner">
+                        <div class="container-fluid">
+                            <a id="titleLink" class="brand" href="/">@title</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+
+
+            <div id="menu">
+
+            </div>
+
+
+
+            <div id="content">
+                <div class="container">
+
+                    <div class="row-fluid">
+                        <div id="chart" class="span6">
+                            <canvas id="myChart" width="1200" height="500"></canvas>
+                        </div>
+                    </div>
+
+
+
+                    <script>
+
+
+                        console.log(@Html(json));
+                        var jsonData = JSON.stringify(@Html(json));
+                        console.log("parse json = " + jsonData);
+                        var x = JSON.parse(jsonData).x;
+                        var y = JSON.parse(jsonData).y;
+                        console.log("x = " + x);
+                        console.log("y = " + y);
+
+
+
+                        var ctx = $("#myChart").get(0).getContext("2d");
+                        var data = {
+                                labels: x,
+                                datasets: [
+                                    {
+                                        label: "My First dataset",
+                                        fillColor: "rgba(220,220,220,0.2)",
+                                        strokeColor: "rgba(220,220,220,1)",
+                                        pointColor: "rgba(220,220,220,1)",
+                                        pointStrokeColor: "#fff",
+                                        pointHighlightFill: "#fff",
+                                        pointHighlightStroke: "rgba(220,220,220,1)",
+                                        data: y
+                                    }
+
+                                ]
+                        };
+                        var chart = new Chart(ctx).Line(data);
+
+                    </script>
+
+                </div>
+
+            </div>
+
+
+
+
+        </div>
+
+
+
+
+
+    </body>
+</html>

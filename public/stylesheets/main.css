@@ -1,0 +1,12 @@
+body {
+    margin-top: 500px;
+}
+.doughnut-legend li span {
+    width: 10em;
+    height: 1em;
+    display: inline-block;
+    margin-right: 50px;
+}
+.doughnut-legend {
+    list-style: none;
+}
