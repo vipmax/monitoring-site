@@ -10,7 +10,7 @@ class Application(dao: Dao) extends Controller {
 
 
   def index () = Action {
-    val menuJson = dao.getInfo
+    val menuJson = dao.getMenuInfo
 
     Ok(views.html.main("Monitoring", menuJson.toString()))
   }
@@ -29,7 +29,7 @@ class Application(dao: Dao) extends Controller {
 
     val json = obj("x" -> JsArray(1.to(10).map(JsNumber(_))), "y" -> JsArray(1.to(10).map(value => JsString(Random.nextInt(10).toString)))).toString()
 
-    Ok(views.html.graph("Graph for "+header,json))
+    Ok(views.html.graph("Graph for "+header,dao.getMenuInfo.toString(),json))
   }
 
   def rowGraphic(instanceId: Int, parameterId: Int) = Action {
@@ -38,7 +38,7 @@ class Application(dao: Dao) extends Controller {
 
 
     var parameter = dao.getParameters.filter(p => p.parameterId.equals(parameterId)).head
-    val header = " "+ dao.getInstances.filter(i=>i.instanceId.equals(instanceId)).head.name + " on" + parameter.name + " " + parameter.unit
+    val header = " "+ dao.getInstances.filter(i=>i.instanceId.equals(instanceId)).head.name
 
     val lastRawData = dao.getLastRawData(instanceId,parameterId).toSeq
 
@@ -46,6 +46,10 @@ class Application(dao: Dao) extends Controller {
       "y" -> JsArray(lastRawData.map(value => JsNumber(value._2)))).toString()
 
 
-    Ok(views.html.graph("Graphic for " + header,json))
+    Ok(views.html.graph("Graphic for " + header,dao.getMenuInfo.toString(), json))
+  }
+
+  def ajaxCall = Action { implicit request =>
+    Ok("Ajax Call!")
   }
 }

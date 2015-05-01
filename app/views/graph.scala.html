@@ -1,4 +1,4 @@
-@(title: String, json: String)
+@(title: String, menuData:String, json: String)
 
 <!DOCTYPE html>
 
@@ -8,19 +8,222 @@
         <link rel="shortcut icon" type="image/png" href="@routes.Assets.at("images/favicon.png")">
         <link rel='stylesheet' href='@routes.WebJarAssets.at(WebJarAssets.locate("bootstrap.min.css"))'>
         <script type='text/javascript' src='@routes.WebJarAssets.at(WebJarAssets.locate("jquery.min.js"))'></script>
-
         <script type='text/javascript' src='@routes.Assets.at("javascripts/Chart.js")'></script>
 
+
         <style>
+         .container {
+             margin-top: 1%;
+             margin-left: 1%;
+        }
+        .va-container {
+            margin: 20px auto 0 auto;
+            position: relative;
+        }
+        .va-wrapper {
+            background: #000;
+            height: 100%;
+            overflow: hidden;
+            position: relative;
+            width: 100%;
+        }
+        .va-slice {
+            cursor: pointer;
+            left: 0px;
+            overflow: hidden;
+            position: absolute;
+            width: 100%;
+        }
 
-            #container {
+        .va-slice-color-1 {
+            background-color: #FFFFFF;
+        }
+        .va-slice-color-2 {
+            background-color: #FFFFFF;
+        }
+        .va-slice-color-3 {
+            background-color: #ffffff;
+        }
+        .va-slice-color-4 {
+            background-color: #FFFFFF;
+        }
+        .va-slice-color-5 {
+            background-color: #FFFFFF;
+        }
+        .va-slice-color-6 {
+            background-color: #FFFFFF;
+        }
+        .va-slice-color-7 {
+            background-color: #FFFFFF;
+        }
+        .va-title {
+            color: rgb( 32, 185, 255 ) ;
+            font-family: 'Open Sans Condensed', sans-serif;
+            font-size: 30px;
+            margin-left: 20px;
+            text-shadow: 0px 0px 1px white;
+            text-transform: uppercase;
+            line-height: 70px;
 
+        }
+        .va-content {
+            margin-left: 25px;
+
+        }
+        .va-slice p {
+            font-family: Georgia, serif;
+            font-size: 20px;
+            font-style: italic;
+        }
+        .va-slice ul {
+            margin-top: 20px;
+        }
+
+        .va-slice ul li {
+            float: left;
+            margin: 0px 2px;
+        }
+        .va-slice ul li a {
+            background: #eede2f;
+            color: #000;
+            font-family: 'PT Sans', sans-serif;
+            font-size: 14px;
+            padding: 3px 6px;
+            text-transform: uppercase;
+        }
+        .va-slice ul li a:hover {
+            background: #000;
+            color: #fff;
+            text-shadow: none;
+        }
+        .va-nav span {
+            cursor: pointer;
+            display: none;
+            height: 25px;
+            left: 50%;
+            margin-left: -20px;
+            opacity: 0.7;
+            position: absolute;
+            text-indent: -9000px;
+            top: -35px;
+            width: 40px;
+            z-index: 100;
+        }
+        .va-nav span.va-nav-next {
+            bottom: -35px;
+            top: auto;
+        }
+        .va-nav span:hover {
+            opacity: 1.0;
+        }        </style>
+        <style>
+            .ui-menu {
+                background-color: transparent;
+                border-style: none;
+                margin-left: 1%;
                 margin-top: 5%;
-
-
+                width: 150px;
             }
-
+            #container {
+            }
+            #header {
+            }
+            #menu {
+                float: left;
+                height: 600px;
+                width: 200px;
+            }
+            #content {
+                float: left;
+                height: 600px;
+                width: 700px;
+            }
+            *, *:before, *:after {
+                box-sizing: border-box;
+                font-family: 'Lato', sans-serif;
+                margin: auto;
+                moz-box-sizing: border-box;
+                padding: 0;
+                webkit-box-sizing: border-box;
+            }
+            nav {
+                background: #fff;
+                border: 1px solid rgba(0,0,0,.1);
+                box-shadow: 0 3px 10px -2px rgba(0,0,0,.1);
+                left: 0;
+                position: relative;
+                top: 0;
+                width: 100%;
+            }
+            nav ul {
+                display: inline-table;
+                list-style: none;
+                position: relative;
+            }
+            nav ul li {
+                float: left;
+                moz-transition: all .2s ease-in-out;
+                transition: all .2s ease-in-out;
+                webkit-transition: all .2s ease-in-out;
+            }
+            nav ul li:hover {
+                background: rgba(0,0,0,.15);
+            }
+            nav ul li:hover > ul {
+                display: block;
+            }
+            nav ul li {
+                float: left;
+                moz-transition: all .2s ease-in-out;
+                transition: all .2s ease-in-out;
+                webkit-transition: all .2s ease-in-out;
+            }
+            nav ul li a {
+                color: rgba(10, 116, 255, 1);
+                display: block;
+                font-size: .9em;
+                letter-spacing: 1px;
+                padding: 30px 20px;
+                text-decoration: none;
+                text-transform: uppercase;
+            }
+            nav ul ul {
+                background: #fff;
+                border: 1px solid rgba(0,0,0,.1);
+                box-shadow: -3px 3px 10px -2px rgba(0,0,0,.1);
+                display: none;
+                position: absolute;
+                top: 100%;
+            }
+            nav ul ul li {
+                float: none;
+                position: relative;
+            }
+            nav ul ul li a {
+                border-bottom: 1px solid rgba(0,0,0,.05);
+                padding: 15px 30px;
+            }
+            nav ul ul ul {
+                left: 100%;
+                position: absolute;
+                top: 0;
+            }
+            font-face {
+                font-family: 'Lato';
+                font-style: normal;
+                font-weight: 400;
+            }
         </style>
+
+            <!-- Style for the demo page -->
+        <link rel="stylesheet" type="text/css" href="/stylesheets/demo.css" />
+        <link rel="stylesheet" type="text/css" href="/stylesheets/style.css" />
+        <noscript>
+            <link rel="stylesheet" type="text/css" href="/stylesheets/styleNoJS.css" />
+        </noscript>
+
+        <link href='http://fonts.googleapis.com/css?family=PT+Sans+Narrow&v1' rel='stylesheet' type='text/css' />
+        <link href='http://fonts.googleapis.com/css?family=Open+Sans+Condensed:300&v2' rel='stylesheet' type='text/css'>
 
     </head>
 
@@ -28,81 +231,243 @@
         <div id="container">
 
             <div id="header">
-                <div class="navbar navbar-fixed-top">
-                    <div class="navbar-inner">
-                        <div class="container-fluid">
-                            <a id="titleLink" class="brand" href="/">@title</a>
-                        </div>
-                    </div>
-                </div>
+
+                <nav role='navigation'>
+                    <ul id="ul menu">
+
+                        <li><a href="/">Home</a></li>
+                        <li><a href="/">@title</a></li>
+
+
+                        <script>
+                            var jsonData = JSON.parse(JSON.stringify(@Html(menuData)));
+                            var projects = jsonData.projects;
+
+                           for (var i = 0; i < projects.length; i++) {
+                                var project = projects[i];
+                                console.log("project = " + project.projectName);
+                                var li = document.createElement('li');
+                                var a = document.createElement('a');
+                                var ul = document.createElement('ul');
+                                a.setAttribute("href","/");
+                                a.id = project.projectId;
+                                a.innerHTML = project.projectName;
+                                li.appendChild(a);
+
+                                for (var j = 0; j < project.instances.length; j++) {
+                                     var instance = project.instances[j];
+                                     console.log("instance = " + instance.instanceName);
+
+                                     var li1 = document.createElement('li');
+                                     var a1 = document.createElement('a');
+                                     a1.setAttribute("href","/rowGraphic?instanceId="+instance.instanceId+"&parameterId=1");
+
+                                     a1.id = instance.instanceId;
+                                     a1.innerHTML = instance.instanceName;
+                                     li1.appendChild(a1);
+                                     ul.appendChild(li1)
+                                }
+
+
+                                li.appendChild(ul);
+                                li.id = project;
+                                document.getElementById("ul menu").appendChild(li);
+                            }
+
+                        </script>
+                    </ul>
+                </nav>
+                @*<div class="navbar navbar-fixed-top">*@
+                    @*<div class="navbar-inner">*@
+                        @*<div class="container-fluid">*@
+                            @*<a id="titleLink" class="brand" href="/">@title</a>*@
+                        @*</div>*@
+                    @*</div>*@
+                @*</div>*@
             </div>
-
-
-
-
-            <div id="menu">
-
-            </div>
-
 
 
             <div id="content">
                 <div class="container">
 
-                    <div class="row-fluid">
-                        <div id="chart" class="span6">
-                            <canvas id="myChart" width="1200" height="500"></canvas>
+
+
+                    <div id="va-accordion" class="va-container" >
+
+                        <div class="va-wrapper">
+                            <div class="va-slice va-slice-color-1">
+                                <h3 class="va-title">Marketing</h3>
+                                <div class="va-content">
+
+                                    @*график*@
+                                    <ul>
+                                        <div class="row-fluid">
+                                            <div id="chart" class="span6">
+                                                <canvas id="myChart1" width="1600" height="500"></canvas>
+                                            </div>
+                                        </div>
+                                    </ul>
+
+
+                                    <script>
+
+                                        console.log(@Html(json));
+                                        var jsonData = JSON.stringify(@Html(json));
+                                        console.log("parse json = " + jsonData);
+                                        var x = JSON.parse(jsonData).x;
+                                        var y = JSON.parse(jsonData).y;
+                                        console.log("x = " + x);
+                                        console.log("y = " + y);
+
+
+                                        var ctx = $("#myChart1").get(0).getContext("2d");
+                                        var data = {
+                                                labels: x,
+                                                datasets: [
+                                                    {
+                                                        label: "My First dataset",
+                                                        fillColor: "rgba(220,220,220,0.2)",
+                                                        strokeColor: "rgba(220,220,220,1)",
+                                                        pointColor: "rgba(220,220,220,1)",
+                                                        pointStrokeColor: "#fff",
+                                                        pointHighlightFill: "#fff",
+                                                        pointHighlightStroke: "rgba(220,220,220,1)",
+                                                        data: y
+                                                    }
+
+                                                ]
+                                        };
+                                        var chart = new Chart(ctx).Line(data);
+                                </script>
+
+                                </div>
+                            </div>
+                            <div class="va-slice va-slice-color-2">
+                                <h3 class="va-title">Marketing</h3>
+                                <div class="va-content">
+                                    <ul>
+                                        <div class="row-fluid">
+                                            <div id="chart" class="span6">
+                                                <canvas id="myChart2" width="1000" height="500"></canvas>
+                                            </div>
+                                        </div>
+                                    </ul>
+                                    <script>
+
+                                        console.log(@Html(json));
+                                        var jsonData = JSON.stringify(@Html(json));
+                                        console.log("parse json = " + jsonData);
+                                        var x = JSON.parse(jsonData).x;
+                                        var y = JSON.parse(jsonData).y;
+                                        console.log("x = " + x);
+                                        console.log("y = " + y);
+
+
+                                        var ctx = $("#myChart2").get(0).getContext("2d");
+                                        var data = {
+                                                labels: x,
+                                                datasets: [
+                                                    {
+                                                        label: "My First dataset",
+                                                        fillColor: "rgba(220,220,220,0.2)",
+                                                        strokeColor: "rgba(220,220,220,1)",
+                                                        pointColor: "rgba(220,220,220,1)",
+                                                        pointStrokeColor: "#fff",
+                                                        pointHighlightFill: "#fff",
+                                                        pointHighlightStroke: "rgba(220,220,220,1)",
+                                                        data: y
+                                                    }
+
+                                                ]
+                                        };
+                                        var chart = new Chart(ctx).Line(data);
+                                </script>
+
+                                </div>
+                            </div>
+                            <div class="va-slice va-slice-color-3">
+                                <h3 class="va-title">Visual Design</h3>
+                                <div class="va-content">
+                                    <p>Andrew Alaniz</p>
+                                    <ul>
+                                        <li><a href="#">About</a></li>
+                                        <li><a href="#">Portfolio</a></li>
+                                        <li><a href="#">Contact</a></li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div class="va-slice va-slice-color-4">
+                                <h3 class="va-title">Quality Control</h3>
+                                <div class="va-content">
+                                    <p>Ben Freeman</p>
+                                    <ul>
+                                        <li><a href="#">About</a></li>
+                                        <li><a href="#">Portfolio</a></li>
+                                        <li><a href="#">Contact</a></li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div class="va-slice va-slice-color-5">
+                                <h3 class="va-title">Web development</h3>
+                                <div class="va-content">
+                                    <p>Alex Schuman</p>
+                                    <ul>
+                                        <li><a href="#">About</a></li>
+                                        <li><a href="#">Portfolio</a></li>
+                                        <li><a href="#">Contact</a></li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div class="va-slice va-slice-color-6">
+                                <h3 class="va-title">Customer Support</h3>
+                                <div class="va-content">
+                                    <p>Maria Wales</p>
+                                    <ul>
+                                        <li><a href="#">About</a></li>
+                                        <li><a href="#">Portfolio</a></li>
+                                        <li><a href="#">Contact</a></li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div class="va-slice va-slice-color-7">
+                                <h3 class="va-title">Back to Codrops</h3>
+                                <div class="va-content">
+                                    <p>This demo is brought to you by Codrops. Images by <a href="http://www.flickr.com/people/aturkus/" target="_blank">Alan Turkus</a><br />
+                                        More examples:</p>
+                                    <ul>
+                                        <li><a href="example1.html">Example 1</a></li>
+                                        <li><a href="example2.html">Example 2</a></li>
+                                        <li><a href="example3.html">Example 3</a></li>
+                                        <li><a href="example4.html">Example 4</a></li>
+                                        <li><a href="http://tympanus.net/codrops/2011/07/22/vertical-sliding-accordion/">Back to the Codrops post</a></li>
+                                    </ul>
+                                </div>
+                            </div>
                         </div>
                     </div>
 
 
 
-                    <script>
+                    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js"></script>
+                    <script type="text/javascript" src='@routes.Assets.at("javascripts/jquery.easing.1.3.js")'></script>
+                    <script type="text/javascript" src='@routes.Assets.at("javascripts/jquery.mousewheel.js")'></script>
+                    <script type="text/javascript" src='@routes.Assets.at("javascripts/jquery.vaccordion.js")'></script>
+                    <script type="text/javascript">
+                        $(function() {
+                            $('#va-accordion').vaccordion({
+                                accordionW		: $(window).width(),
+                                accordionH		: $(window).height(),
+                                visibleSlices	: 6,
+                                expandedHeight	: 700,
+                                animOpacity		: 0.8,
+                                contentAnimSpeed: 500
 
+                            });
 
-                        console.log(@Html(json));
-                        var jsonData = JSON.stringify(@Html(json));
-                        console.log("parse json = " + jsonData);
-                        var x = JSON.parse(jsonData).x;
-                        var y = JSON.parse(jsonData).y;
-                        console.log("x = " + x);
-                        console.log("y = " + y);
-
-
-
-                        var ctx = $("#myChart").get(0).getContext("2d");
-                        var data = {
-                                labels: x,
-                                datasets: [
-                                    {
-                                        label: "My First dataset",
-                                        fillColor: "rgba(220,220,220,0.2)",
-                                        strokeColor: "rgba(220,220,220,1)",
-                                        pointColor: "rgba(220,220,220,1)",
-                                        pointStrokeColor: "#fff",
-                                        pointHighlightFill: "#fff",
-                                        pointHighlightStroke: "rgba(220,220,220,1)",
-                                        data: y
-                                    }
-
-                                ]
-                        };
-                        var chart = new Chart(ctx).Line(data);
-
-                    </script>
-
+                        });
+		            </script>
                 </div>
-
             </div>
-
-
-
-
         </div>
-
-
-
-
-
     </body>
 </html>

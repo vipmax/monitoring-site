@@ -24,7 +24,7 @@ class Dao(node: String) {
 
   def getLastRawData(instanceId: Int, parameterId: Int) = {
 
-    val timeSince = DateTime.now.withZone(DateTimeZone.forOffsetHours(3)).withMinuteOfHour(0).withSecondOfMinute(0).withMillisOfSecond(0).toString()
+    val timeSince = DateTime.now.withZone(DateTimeZone.forOffsetHours(3)).minusHours(1).withSecondOfMinute(0).withMillisOfSecond(0).toString()
     val defaultTimePeriod = "1m"
     val query = ("select time, value from raw_data " +
       "where instance_id = %d and parameter_id = %d and time_period = '%s' and time >= '%s'")
@@ -32,7 +32,7 @@ class Dao(node: String) {
 
     println("query = " + query)
 
-    val lastRawData = session.execute(query).map(row => (new DateTime(row.getDate("time")).plusHours(1), row.getDouble("value")))
+    val lastRawData = session.execute(query).map(row => (new DateTime(row.getDate("time")), row.getDouble("value")))
 
     lastRawData
   }
@@ -69,7 +69,7 @@ class Dao(node: String) {
 
   def getRows(table:String) = session.execute(select().all().from(table))
 
-  def getInfo = {
+  def getMenuInfo = {
 
     val menuData = MenuData()
     var menuJson = Json.obj()
@@ -149,7 +149,7 @@ class Dao(node: String) {
 
 object DaoTest extends App {
   val dao = new Dao("127.0.0.1")
-  var info = dao.getInfo
+  var info = dao.getMenuInfo
   println("info = " + info)
 
 
