@@ -188,14 +188,33 @@
                             var projects = jsonData.projects;
 
                            for (var i = 0; i < projects.length; i++) {
-                                console.log("project = " + projects[i]);
+                                var project = projects[i];
+                                console.log("project = " + project.projectName);
                                 var li = document.createElement('li');
                                 var a = document.createElement('a');
-                                a.setAttribute("href","/")
-                                a.id = projects[i];
-                                a.innerHTML = projects[i];
+                                var ul = document.createElement('ul');
+                                a.setAttribute("href","/");
+                                a.id = project.projectId;
+                                a.innerHTML = project.projectName;
                                 li.appendChild(a);
-                                li.id = projects[i];
+
+                                for (var j = 0; j < project.instances.length; j++) {
+                                     var instance = project.instances[j];
+                                     console.log("instance = " + instance.instanceName);
+
+                                     var li1 = document.createElement('li');
+                                     var a1 = document.createElement('a');
+                                     a1.setAttribute("href","/rowGraphic?instanceId="+instance.instanceId+"&parameterId=1");
+
+                                     a1.id = instance.instanceId;
+                                     a1.innerHTML = instance.instanceName;
+                                     li1.appendChild(a1);
+                                     ul.appendChild(li1)
+                                }
+
+
+                                li.appendChild(ul);
+                                li.id = project;
                                 document.getElementById("ul menu").appendChild(li);
                             }
 

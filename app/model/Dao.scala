@@ -133,7 +133,7 @@ class Dao(node: String) {
     menuJson += ("projects",projectsJ)
 
     println("menuJson = " + menuJson)
-    menuData
+    menuJson
   }
 
 

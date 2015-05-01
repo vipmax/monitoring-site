@@ -10,13 +10,9 @@ class Application(dao: Dao) extends Controller {
 
 
   def index () = Action {
-    val menuInfo = dao.getInfo
-//    val project = project(("projectName", JsString("")), ("id", JsString("")), ("instances", project()))
-    //    val json = obj(("projects",Json.arr(obj(())menuInfo.map(mi => JsString(mi.project.name))))).toString()
-//    val json = project(("projects",Json.arr(project))).toString()
+    val menuJson = dao.getInfo
 
-
-    Ok(views.html.main("Monitoring", ""))
+    Ok(views.html.main("Monitoring", menuJson.toString()))
   }
 
 
@@ -40,7 +36,9 @@ class Application(dao: Dao) extends Controller {
     println("instanceId = " + instanceId)
     println("parameterId = " + parameterId)
 
-    val header = + instanceId + " " + parameterId
+
+    var parameter = dao.getParameters.filter(p => p.parameterId.equals(parameterId)).head
+    val header = " "+ dao.getInstances.filter(i=>i.instanceId.equals(instanceId)).head.name + " on" + parameter.name + " " + parameter.unit
 
     val lastRawData = dao.getLastRawData(instanceId,parameterId).toSeq
 
