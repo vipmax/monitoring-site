@@ -304,7 +304,7 @@
 						// should not be more than accordionH
 						expandedHeight	: 250,
 						// speed when opening / closing a slice
-						animSpeed		: 250,
+						animSpeed		: 850,
 						// easing when opening / closing a slice
 						animEasing		: 'jswing',
 						// opacity value for the collapsed slices

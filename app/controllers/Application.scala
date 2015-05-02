@@ -1,9 +1,11 @@
 package controllers
 
-import model.Dao
+import model.domain.Parameter
+import model.{ParameterWithData, Dao}
 import play.api.libs.json.Json.obj
 import play.api.mvc.{Action, _}
 import play.api.libs.json._
+import scala.collection.mutable
 import scala.util.Random
 
 class Application(dao: Dao) extends Controller {
@@ -29,27 +31,34 @@ class Application(dao: Dao) extends Controller {
 
     val json = obj("x" -> JsArray(1.to(10).map(JsNumber(_))), "y" -> JsArray(1.to(10).map(value => JsString(Random.nextInt(10).toString)))).toString()
 
-    Ok(views.html.graph("Graph for "+header,dao.getMenuInfo.toString(),json))
+    Ok("")
   }
 
-  def rowGraphic(instanceId: Int, parameterId: Int) = Action {
+  def rowGraphic(projectId: Int,instanceId: Int) = Action {
+    println("projectId = " + projectId)
     println("instanceId = " + instanceId)
-    println("parameterId = " + parameterId)
+
+    val header = " " + dao.getInstances.filter(i => i.instanceId.equals(instanceId)).head.name
 
 
-    var parameter = dao.getParameters.filter(p => p.parameterId.equals(parameterId)).head
-    val header = " "+ dao.getInstances.filter(i=>i.instanceId.equals(instanceId)).head.name
+    val parameterIdsOnInstance: Set[Integer] = dao.getInstances.filter(i => i.instanceId.equals(instanceId)).head.parameters
 
-    val lastRawData = dao.getLastRawData(instanceId,parameterId).toSeq
+    val parametersDataList = mutable.MutableList[ParameterWithData]()
 
-    val json = obj("x" -> JsArray(lastRawData.map(value => JsString(value._1.toString("yyyy.MM.dd  HH:mm")))),
-      "y" -> JsArray(lastRawData.map(value => JsNumber(value._2)))).toString()
+    for (parameterId <- parameterIdsOnInstance) {
+      val parameter = dao.getParameter(parameterId)
+      val data = dao.getLastRawData(instanceId, parameterId).toList
+      val jsonData = obj("x" -> JsArray(data.map(value => JsString(value._1.toString("yyyy.MM.dd  HH:mm")))), "y" -> JsArray(data.map(value => JsNumber(value._2)))).toString()
 
+      parametersDataList += ParameterWithData(parameter, jsonData)
+    }
 
-    Ok(views.html.graph("Graphic for " + header,dao.getMenuInfo.toString(), json))
+    println("parametersDataList = " + parametersDataList.foreach(println))
+
+    Ok(views.html.graph(header, dao.getMenuInfo.toString(),parametersDataList))
   }
 
-  def ajaxCall = Action { implicit request =>
-    Ok("Ajax Call!")
-  }
+
+
+
 }

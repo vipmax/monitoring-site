@@ -1,4 +1,4 @@
-@(title: String, menuData:String, json: String)
+@(title: String, menuData:String, parametersDataList:scala.collection.mutable.MutableList[model.ParameterWithData])
 
 <!DOCTYPE html>
 
@@ -13,18 +13,19 @@
 
         <style>
          .container {
-             margin-top: 1%;
-             margin-left: 1%;
+             margin-left: 4%;
         }
         .va-container {
-            margin: 20px auto 0 auto;
-            position: relative;
+            margin: 10px auto 0 auto;
+            position: inherit;
+            background: #FFFFFF;
+
         }
         .va-wrapper {
-            background: #000;
+            background: #FFFFFF ;
             height: 100%;
             overflow: hidden;
-            position: relative;
+            position: absolute;
             width: 100%;
         }
         .va-slice {
@@ -71,7 +72,7 @@
 
         }
         .va-slice p {
-            font-family: Georgia, serif;
+            font-family: 'Open Sans Condensed', sans-serif;
             font-size: 20px;
             font-style: italic;
         }
@@ -115,7 +116,22 @@
         }
         .va-nav span:hover {
             opacity: 1.0;
-        }        </style>
+        }
+         h2 {
+             color : #20b9ff ;
+             font-family : 'Open Sans Condensed', sans-serif ;
+         }
+         #va-accordion {
+         width : 120% ;
+         height : 130% ;
+         }
+
+         /*canvas {*/
+         /*width: 120% !important;*/
+         /*max-width: 120%;*/
+         /*height: 120% !important;*/
+         /*}*/
+        </style>
         <style>
             .ui-menu {
                 background-color: transparent;
@@ -124,10 +140,7 @@
                 margin-top: 5%;
                 width: 150px;
             }
-            #container {
-            }
-            #header {
-            }
+
             #menu {
                 float: left;
                 height: 600px;
@@ -138,12 +151,13 @@
                 height: 600px;
                 width: 700px;
             }
+
+
             *, *:before, *:after {
                 box-sizing: border-box;
-                font-family: 'Lato', sans-serif;
-                margin: auto;
+                font-family: 'Open Sans Condensed', sans-serif;
+                font-size: 115%;
                 moz-box-sizing: border-box;
-                padding: 0;
                 webkit-box-sizing: border-box;
             }
             nav {
@@ -179,7 +193,7 @@
                 webkit-transition: all .2s ease-in-out;
             }
             nav ul li a {
-                color: rgba(10, 116, 255, 1);
+                color: rgb( 32, 185, 255 );
                 display: block;
                 font-size: .9em;
                 letter-spacing: 1px;
@@ -192,12 +206,13 @@
                 border: 1px solid rgba(0,0,0,.1);
                 box-shadow: -3px 3px 10px -2px rgba(0,0,0,.1);
                 display: none;
-                position: absolute;
+                position: inherit;
                 top: 100%;
             }
             nav ul ul li {
                 float: none;
                 position: relative;
+                display: list-item;
             }
             nav ul ul li a {
                 border-bottom: 1px solid rgba(0,0,0,.05);
@@ -205,7 +220,7 @@
             }
             nav ul ul ul {
                 left: 100%;
-                position: absolute;
+                position: relative;
                 top: 0;
             }
             font-face {
@@ -236,7 +251,7 @@
                     <ul id="ul menu">
 
                         <li><a href="/">Home</a></li>
-                        <li><a href="/">@title</a></li>
+                        <li><a >@title</a></li>
 
 
                         <script>
@@ -260,7 +275,7 @@
 
                                      var li1 = document.createElement('li');
                                      var a1 = document.createElement('a');
-                                     a1.setAttribute("href","/rowGraphic?instanceId="+instance.instanceId+"&parameterId=1");
+                                     a1.setAttribute("href","/rowGraphic?projectId="+project.projectId+"&instanceId="+instance.instanceId);
 
                                      a1.id = instance.instanceId;
                                      a1.innerHTML = instance.instanceName;
@@ -277,13 +292,9 @@
                         </script>
                     </ul>
                 </nav>
-                @*<div class="navbar navbar-fixed-top">*@
-                    @*<div class="navbar-inner">*@
-                        @*<div class="container-fluid">*@
-                            @*<a id="titleLink" class="brand" href="/">@title</a>*@
-                        @*</div>*@
-                    @*</div>*@
-                @*</div>*@
+
+
+
             </div>
 
 
@@ -292,43 +303,47 @@
 
 
 
-                    <div id="va-accordion" class="va-container" >
+                    <div id="va-accordion" class="va-container" style="width: 120%;height: 130%" >
 
-                        <div class="va-wrapper">
-                            <div class="va-slice va-slice-color-1">
-                                <h3 class="va-title">Marketing</h3>
+                        <div class="va-wrapper" >
+
+
+                            @for(parameterDataList <- parametersDataList){
+                            <div id="@parameterDataList.parameter.parameterId" class="va-slice va-slice-color-@parameterDataList.parameter.parameterId" style="width: 100%; height: 100%">
+                                <h3 class="va-title">@parameterDataList.parameter.name</h3>
                                 <div class="va-content">
+
+                                    <h2 style="color: #20b9ff; font-family: 'Open Sans Condensed', sans-serif;">
+                                        Parameter @parameterDataList.parameter.name in @parameterDataList.parameter.unit
+                                    </h2>
 
                                     @*график*@
-                                    <ul>
-                                        <div class="row-fluid">
-                                            <div id="chart" class="span6">
-                                                <canvas id="myChart1" width="1600" height="500"></canvas>
-                                            </div>
+
+                                <ul>
+                                    <div class="row-fluid">
+                                        <div id="chart@parameterDataList.parameter.parameterId" class="span6">
+                                            <canvas id="myChart@parameterDataList.parameter.parameterId" style="height: 50%; width: 130%;min-width: 120%"></canvas>
                                         </div>
-                                    </ul>
+                                    </div>
+                                </ul>
 
 
-                                    <script>
-
-                                        console.log(@Html(json));
-                                        var jsonData = JSON.stringify(@Html(json));
-                                        console.log("parse json = " + jsonData);
-                                        var x = JSON.parse(jsonData).x;
-                                        var y = JSON.parse(jsonData).y;
+                                <script>
+                                        var x = JSON.parse(JSON.stringify(@{Html(parameterDataList.dataJson)})).x;
+                                        var y = JSON.parse(JSON.stringify(@{Html(parameterDataList.dataJson)})).y;
                                         console.log("x = " + x);
                                         console.log("y = " + y);
 
-
-                                        var ctx = $("#myChart1").get(0).getContext("2d");
+                                        var chartName = "#myChart" + @parameterDataList.parameter.parameterId;
+                                        var ctx = $(chartName).get(0).getContext("2d");
                                         var data = {
                                                 labels: x,
                                                 datasets: [
                                                     {
                                                         label: "My First dataset",
                                                         fillColor: "rgba(220,220,220,0.2)",
-                                                        strokeColor: "rgba(220,220,220,1)",
-                                                        pointColor: "rgba(220,220,220,1)",
+                                                        strokeColor: "rgb( 32, 185, 255 )",
+//                                                        pointColor: "rgba(220,220,220,1)",
                                                         pointStrokeColor: "#fff",
                                                         pointHighlightFill: "#fff",
                                                         pointHighlightStroke: "rgba(220,220,220,1)",
@@ -339,110 +354,9 @@
                                         };
                                         var chart = new Chart(ctx).Line(data);
                                 </script>
-
                                 </div>
                             </div>
-                            <div class="va-slice va-slice-color-2">
-                                <h3 class="va-title">Marketing</h3>
-                                <div class="va-content">
-                                    <ul>
-                                        <div class="row-fluid">
-                                            <div id="chart" class="span6">
-                                                <canvas id="myChart2" width="1000" height="500"></canvas>
-                                            </div>
-                                        </div>
-                                    </ul>
-                                    <script>
-
-                                        console.log(@Html(json));
-                                        var jsonData = JSON.stringify(@Html(json));
-                                        console.log("parse json = " + jsonData);
-                                        var x = JSON.parse(jsonData).x;
-                                        var y = JSON.parse(jsonData).y;
-                                        console.log("x = " + x);
-                                        console.log("y = " + y);
-
-
-                                        var ctx = $("#myChart2").get(0).getContext("2d");
-                                        var data = {
-                                                labels: x,
-                                                datasets: [
-                                                    {
-                                                        label: "My First dataset",
-                                                        fillColor: "rgba(220,220,220,0.2)",
-                                                        strokeColor: "rgba(220,220,220,1)",
-                                                        pointColor: "rgba(220,220,220,1)",
-                                                        pointStrokeColor: "#fff",
-                                                        pointHighlightFill: "#fff",
-                                                        pointHighlightStroke: "rgba(220,220,220,1)",
-                                                        data: y
-                                                    }
-
-                                                ]
-                                        };
-                                        var chart = new Chart(ctx).Line(data);
-                                </script>
-
-                                </div>
-                            </div>
-                            <div class="va-slice va-slice-color-3">
-                                <h3 class="va-title">Visual Design</h3>
-                                <div class="va-content">
-                                    <p>Andrew Alaniz</p>
-                                    <ul>
-                                        <li><a href="#">About</a></li>
-                                        <li><a href="#">Portfolio</a></li>
-                                        <li><a href="#">Contact</a></li>
-                                    </ul>
-                                </div>
-                            </div>
-                            <div class="va-slice va-slice-color-4">
-                                <h3 class="va-title">Quality Control</h3>
-                                <div class="va-content">
-                                    <p>Ben Freeman</p>
-                                    <ul>
-                                        <li><a href="#">About</a></li>
-                                        <li><a href="#">Portfolio</a></li>
-                                        <li><a href="#">Contact</a></li>
-                                    </ul>
-                                </div>
-                            </div>
-                            <div class="va-slice va-slice-color-5">
-                                <h3 class="va-title">Web development</h3>
-                                <div class="va-content">
-                                    <p>Alex Schuman</p>
-                                    <ul>
-                                        <li><a href="#">About</a></li>
-                                        <li><a href="#">Portfolio</a></li>
-                                        <li><a href="#">Contact</a></li>
-                                    </ul>
-                                </div>
-                            </div>
-                            <div class="va-slice va-slice-color-6">
-                                <h3 class="va-title">Customer Support</h3>
-                                <div class="va-content">
-                                    <p>Maria Wales</p>
-                                    <ul>
-                                        <li><a href="#">About</a></li>
-                                        <li><a href="#">Portfolio</a></li>
-                                        <li><a href="#">Contact</a></li>
-                                    </ul>
-                                </div>
-                            </div>
-                            <div class="va-slice va-slice-color-7">
-                                <h3 class="va-title">Back to Codrops</h3>
-                                <div class="va-content">
-                                    <p>This demo is brought to you by Codrops. Images by <a href="http://www.flickr.com/people/aturkus/" target="_blank">Alan Turkus</a><br />
-                                        More examples:</p>
-                                    <ul>
-                                        <li><a href="example1.html">Example 1</a></li>
-                                        <li><a href="example2.html">Example 2</a></li>
-                                        <li><a href="example3.html">Example 3</a></li>
-                                        <li><a href="example4.html">Example 4</a></li>
-                                        <li><a href="http://tympanus.net/codrops/2011/07/22/vertical-sliding-accordion/">Back to the Codrops post</a></li>
-                                    </ul>
-                                </div>
-                            </div>
+                            }
                         </div>
                     </div>
 
@@ -458,9 +372,9 @@
                                 accordionW		: $(window).width(),
                                 accordionH		: $(window).height(),
                                 visibleSlices	: 6,
-                                expandedHeight	: 700,
+                                expandedHeight	: $(window).width()/2,
                                 animOpacity		: 0.8,
-                                contentAnimSpeed: 500
+                                contentAnimSpeed: 300
 
                             });
 

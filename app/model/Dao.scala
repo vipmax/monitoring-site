@@ -142,6 +142,12 @@ class Dao(node: String) {
     cluster.close
   }
 
+  def getInstances(projectId: Int) = {
+
+     projects.find(_.projectId.equals(projectId)).get.instances
+  }
+
+  def getParameter(parameterId: Int) = parameters.find(_.parameterId.equals(parameterId)).getOrElse(Parameter(-1,"","",0,0))
 }
 
 

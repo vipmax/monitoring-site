@@ -125,7 +125,7 @@
         nav ul li a{
         display: block;
         padding: 30px 20px;
-        color: rgba(10, 116, 255, 1);
+        color: rgb( 32, 185, 255 );
         font-size: .9em;
         letter-spacing: 1px;
         text-decoration: none;
@@ -173,7 +173,14 @@
 
 
                         <li><a href="/">@title Home</a></li>
-
+                        <li><a href="#">About</a>
+                            <ul>
+                                <li><a href="">Our team</a></li>
+                                <li><a href="">History</a></li>
+                            </ul>
+                        </li>
+                        <li><a href="#">Clients</a></li>
+                        <li><a href="#">Contact Us</a></li>
 
                         <script>
                             var jsonData = JSON.parse(JSON.stringify(@Html(json)));
@@ -196,7 +203,7 @@
 
                                      var li1 = document.createElement('li');
                                      var a1 = document.createElement('a');
-                                     a1.setAttribute("href","/rowGraphic?instanceId="+instance.instanceId+"&parameterId=1");
+                                     a1.setAttribute("href","/rowGraphic?projectId="+project.projectId+"&instanceId="+instance.instanceId);
 
                                      a1.id = instance.instanceId;
                                      a1.innerHTML = instance.instanceName;

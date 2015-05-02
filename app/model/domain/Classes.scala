@@ -6,7 +6,7 @@ import org.joda.time.DateTime
  * Created by i00 on 4/12/15.
  */
 
-case class AggregatedData (rojectId: Integer, instanceId: Integer, parameterId: Integer, time: DateTime, timePeriod: String,
+case class AggregatedData (projectId: Integer, instanceId: Integer, parameterId: Integer, time: DateTime, timePeriod: String,
                            max_Value: Double, min_Value: Double, avg_Value: Double, sum_Value: Double)
 
 case class RawData (instanceId: Integer, parameterId: Integer, time: DateTime, timePeriod: String, value: Double)
