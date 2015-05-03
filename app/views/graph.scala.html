@@ -10,10 +10,31 @@
         <script type='text/javascript' src='@routes.WebJarAssets.at(WebJarAssets.locate("jquery.min.js"))'></script>
         <script type='text/javascript' src='@routes.Assets.at("javascripts/Chart.js")'></script>
 
+        <link rel="stylesheet" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
+        <script src="//code.jquery.com/jquery-1.10.2.js"></script>
+        <script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
+        <script>
+          $(function() {
+            $( "#datepicker1" ).datepicker();
+            $( "#datepicker2" ).datepicker();
+            $( "#datepicker3" ).datepicker();
+          });
+        </script>
+        <script>
+            function facechange (objName) {
+                if ( $(objName).css('display') == 'none' ) {
+                    $(objName).animate({height: 'show'}, 300);
+                } else {
+                    $(objName).animate({height: 'hide'}, 300);
+                }
+            }
+        </script>
 
         <style>
+
          .container {
-             margin-left: 4%;
+             width: 100%;
+             height: 100%;
         }
         .va-container {
             margin: 10px auto 0 auto;
@@ -22,10 +43,10 @@
 
         }
         .va-wrapper {
-            background: #FFFFFF ;
+            background: #ffffff ;
             height: 100%;
             overflow: hidden;
-            position: absolute;
+            position:  relative;
             width: 100%;
         }
         .va-slice {
@@ -60,11 +81,11 @@
         .va-title {
             color: rgb( 32, 185, 255 ) ;
             font-family: 'Open Sans Condensed', sans-serif;
-            font-size: 30px;
-            margin-left: 20px;
-            text-shadow: 0px 0px 1px white;
+            font-size: 20px;
+            margin-left: 6%;
+            /*text-shadow: 0px 0px 1px white;*/
             text-transform: uppercase;
-            line-height: 70px;
+            line-height: 10px;
 
         }
         .va-content {
@@ -125,12 +146,11 @@
          width : 120% ;
          height : 130% ;
          }
-
-         /*canvas {*/
-         /*width: 120% !important;*/
-         /*max-width: 120%;*/
-         /*height: 120% !important;*/
-         /*}*/
+         #parametersMenu {
+         margin-left : 5% ;
+         display : none ;
+         animation: easeInOutCubic;
+         }
         </style>
         <style>
             .ui-menu {
@@ -145,11 +165,13 @@
                 float: left;
                 height: 600px;
                 width: 200px;
+            position: fixed;
+
             }
             #content {
                 float: left;
-                height: 600px;
-                width: 700px;
+                height: 100%;
+                width: 100%;
             }
 
 
@@ -290,6 +312,11 @@
                             }
 
                         </script>
+
+                        <li>
+                            <a onclick="facechange('#parametersMenu'); return false">OPTIONS</a>
+                        </li>
+
                     </ul>
                 </nav>
 
@@ -299,31 +326,47 @@
 
 
             <div id="content">
+                <div id="parametersMenu"  style="margin-left: 5%; display: none">
+                    <ul >
+                        <li style="list-style-type: none;">
+                            <p></p>
+                        </li>
+                        <li>
+                            <p>Date: <input type="text" id="datepicker1"></p>
+                        </li>
+                        <li>
+                            <p>Date: <input type="text" id="datepicker2"></p>
+                        </li>
+                        <li>
+                            <p>Date: <input type="text" id="datepicker3"></p>
+                        </li>
+
+                    </ul>
+                </div>
+
                 <div class="container">
-
-
-
-                    <div id="va-accordion" class="va-container" style="width: 120%;height: 130%" >
+                    <div id="va-accordion" class="va-container" style="width: 130%;height: 130%" >
 
                         <div class="va-wrapper" >
 
 
                             @for(parameterDataList <- parametersDataList){
                             <div id="@parameterDataList.parameter.parameterId" class="va-slice va-slice-color-@parameterDataList.parameter.parameterId" style="width: 100%; height: 100%">
-                                <h3 class="va-title">@parameterDataList.parameter.name</h3>
+                                <h2 class="va-title" style="line-height: 10px">@parameterDataList.parameter.name</h2>
                                 <div class="va-content">
 
-                                    <h2 style="color: #20b9ff; font-family: 'Open Sans Condensed', sans-serif;">
-                                        Parameter @parameterDataList.parameter.name in @parameterDataList.parameter.unit
-                                    </h2>
+                                    @*<h1 style="color: #20b9ff; font-family: 'Open Sans Condensed', sans-serif; font-size: medium; margin-left: 5%">*@
+                                        @*Parameter @parameterDataList.parameter.name in @parameterDataList.parameter.unit*@
+                                    @*</h1>*@
 
                                     @*график*@
 
                                 <ul>
                                     <div class="row-fluid">
-                                        <div id="chart@parameterDataList.parameter.parameterId" class="span6">
-                                            <canvas id="myChart@parameterDataList.parameter.parameterId" style="height: 50%; width: 130%;min-width: 120%"></canvas>
+                                        <div id="chart@parameterDataList.parameter.parameterId" class="span5">
+                                            <canvas id="myChart@parameterDataList.parameter.parameterId" style=" width: 140%"></canvas>
                                         </div>
+
                                     </div>
                                 </ul>
 
@@ -343,7 +386,7 @@
                                                         label: "My First dataset",
                                                         fillColor: "rgba(220,220,220,0.2)",
                                                         strokeColor: "rgb( 32, 185, 255 )",
-//                                                        pointColor: "rgba(220,220,220,1)",
+                                                        pointColor: "rgba(220,220,220,1)",
                                                         pointStrokeColor: "#fff",
                                                         pointHighlightFill: "#fff",
                                                         pointHighlightStroke: "rgba(220,220,220,1)",
@@ -373,7 +416,7 @@
                                 accordionH		: $(window).height(),
                                 visibleSlices	: 6,
                                 expandedHeight	: $(window).width()/2,
-                                animOpacity		: 0.8,
+                                animOpacity		: 0.2,
                                 contentAnimSpeed: 300
 
                             });

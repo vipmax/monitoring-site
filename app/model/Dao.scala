@@ -5,12 +5,15 @@ package model
  */
 
 
+import akka.actor.ActorSystem
 import com.datastax.driver.core.Cluster
 import com.datastax.driver.core.querybuilder.QueryBuilder.select
 import model.domain._
 import org.joda.time.{DateTimeZone, DateTime}
+import play.api.Logger
 import play.api.libs.json.{JsString, JsNumber, Json}
 import scala.collection.JavaConversions._
+import scala.concurrent.duration._
 
 
 class Dao(node: String) {
@@ -18,9 +21,46 @@ class Dao(node: String) {
   val cluster = Cluster.builder().addContactPoint(node).build()
   val session = cluster.connect("monitoring")
 
-  private val projects = getProjects.toSet
-  private val instances = getInstances.toSet
-  private val parameters = getParameters.toSet
+  private var projects = getProjects()
+  private var instances = getInstances()
+  private var parameters = getParameters()
+
+  scheduleUpdateMetadata()
+
+  def scheduleUpdateMetadata() {
+    val actorSystem = ActorSystem()
+    val scheduler = actorSystem.scheduler
+    implicit val executor = actorSystem.dispatcher
+
+    class UpdateMetaDataTask extends Runnable{
+
+      override def run() {
+        val actualProjects =   getProjects()
+        val actualInstances =  getInstances()
+        val actualParameters = getParameters()
+
+        val newProjects =   projects.diff(actualProjects)
+        val newInstances =  instances.diff(actualInstances)
+        val newParameters = parameters.diff(actualParameters)
+
+
+        if (newProjects.nonEmpty)   Logger.debug("Found new projects = " + newProjects)
+        if (newInstances.nonEmpty)  Logger.debug("Found new instances = " + newInstances)
+        if (newParameters.nonEmpty) Logger.debug("Found new parameters = " + newParameters)
+
+        projects =   actualProjects
+        instances =  actualInstances
+        parameters = actualParameters
+      }
+    }
+
+    scheduler.schedule(
+      initialDelay = 0 seconds,
+      interval = 5 minute,
+      runnable = new UpdateMetaDataTask
+    )
+
+  }
 
   def getLastRawData(instanceId: Int, parameterId: Int) = {
 
@@ -44,8 +84,8 @@ class Dao(node: String) {
       case "1d" => now.withHourOfDay(0).getMillis
       case "1w" => now.withDayOfWeek(0).getMillis
       case "1m" => now.withDayOfMonth(0).getMillis
-      case "1y" => now.withDayOfYear(0).getMillis/1000
-      case _ =>    now.withMinuteOfHour(0).getMillis/1000
+      case "1y" => now.withDayOfYear(0).getMillis
+      case _ =>    now.withMinuteOfHour(0).getMillis
     }
 
 
@@ -54,8 +94,6 @@ class Dao(node: String) {
       " where project_id = %d and instance_id = %d and parameter_id = %d and time_period = '%s' and time >= '%s'").
       format(projectId, instanceId, parameterId, timePeriod, timeSince)
 
-    println("query = " + query)
-
     session.execute(query).
       map(row => (row.getDate("time"), row.getDouble("max_value"), row.getDouble("min_value"), row.getDouble("avg_value"), row.getDouble("sum_value")))
 
@@ -63,11 +101,12 @@ class Dao(node: String) {
   }
 
 
-  def getProjects   = getRows("projects").  map(r => Project(r.getInt("project_id"),     r.getString("name"), r.getSet("instances",  classOf[Integer]).toSet))
-  def getInstances  = getRows("instances"). map(r => Instance(r.getInt("instance_id"),   r.getString("name"), r.getSet("parameters", classOf[Integer]).toSet))
-  def getParameters = getRows("parameters").map(r => Parameter(r.getInt("parameter_id"), r.getString("name"), r.getString("unit"),   r.getDouble("min_value"), r.getDouble("max_value")))
-
+  def getProjects()   = getRows("projects").  map(r => Project(r.getInt("project_id"),     r.getString("name"), r.getSet("instances",  classOf[Integer]).toSet)).toSet
+  def getInstances()  = getRows("instances"). map(r => Instance(r.getInt("instance_id"),   r.getString("name"), r.getSet("parameters", classOf[Integer]).toSet)).toSet
+  def getParameters() = getRows("parameters").map(r => Parameter(r.getInt("parameter_id"), r.getString("name"), r.getString("unit"),   r.getDouble("min_value"), r.getDouble("max_value"))).toSet
   def getRows(table:String) = session.execute(select().all().from(table))
+  def getInstances(projectId: Int) = projects.find(_.projectId.equals(projectId)).get.instances
+  def getParameter(parameterId: Int) = parameters.find(_.parameterId.equals(parameterId)).getOrElse(Parameter(-1,"","",0,0))
 
   def getMenuInfo = {
 
@@ -142,12 +181,7 @@ class Dao(node: String) {
     cluster.close
   }
 
-  def getInstances(projectId: Int) = {
 
-     projects.find(_.projectId.equals(projectId)).get.instances
-  }
-
-  def getParameter(parameterId: Int) = parameters.find(_.parameterId.equals(parameterId)).getOrElse(Parameter(-1,"","",0,0))
 }
 
 

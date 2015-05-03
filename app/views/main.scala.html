@@ -179,8 +179,26 @@
                                 <li><a href="">History</a></li>
                             </ul>
                         </li>
-                        <li><a href="#">Clients</a></li>
-                        <li><a href="#">Contact Us</a></li>
+                        <li id="testAjax" ><a>Test ajax</a></li>
+                        <script>
+
+                             $('#testAjax').click(function() {
+                                console.log("inside test ajax func")
+                                $.ajax({
+                                    type : 'GET',
+                                    url : "@routes.Application.testAjax()",
+                                    success : function(data) {
+
+                                    },
+                                    error : function(data) {
+
+                                    }
+                                });
+                                return false;
+                            });
+
+
+                        </script>
 
                         <script>
                             var jsonData = JSON.parse(JSON.stringify(@Html(json)));

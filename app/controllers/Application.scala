@@ -31,7 +31,7 @@ class Application(dao: Dao) extends Controller {
 
     val json = obj("x" -> JsArray(1.to(10).map(JsNumber(_))), "y" -> JsArray(1.to(10).map(value => JsString(Random.nextInt(10).toString)))).toString()
 
-    Ok("")
+    Ok(views.html.testTemplates("Hi", 1 to 5 toList))
   }
 
   def rowGraphic(projectId: Int,instanceId: Int) = Action {
@@ -55,10 +55,17 @@ class Application(dao: Dao) extends Controller {
 
     println("parametersDataList = " + parametersDataList.foreach(println))
 
+//    val json = obj("x" -> JsArray(lastRawData.map(value => JsString(value._1.toString("yyyy.MM.dd  HH:mm")))),
+//      "y" -> JsArray(lastRawData.map(value => JsNumber(value._2)))).toString()
+
+
     Ok(views.html.graph(header, dao.getMenuInfo.toString(),parametersDataList))
   }
 
-
+  def testAjax = Action {
+    println("Ajax")
+    Ok("")
+  }
 
 
 }

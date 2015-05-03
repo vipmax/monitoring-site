@@ -6,6 +6,7 @@
 GET        /                         @controllers.Application.index()
 GET        /aggregatedGraphic        @controllers.Application.aggregatedGraphic(projectId: Int,instanceId: Int, parameterId: Int, timePeriod: String)
 GET        /rowGraphic               @controllers.Application.rowGraphic(projectId: Int,instanceId: Int)
+GET        /testAjax                 @controllers.Application.testAjax
 
 # Map static resources from the /public folder to the /assets URL path
 GET        /assets/*file             controllers.Assets.at(path="/public", file)
