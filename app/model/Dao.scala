@@ -113,9 +113,9 @@ class Dao(node: String) {
   def getInstanceParameters(instanceId: Int) = parameters.filter(p => getInstance(instanceId).parameters.contains(p.parameterId))
   def getProjectInstances(projectId: Int) = instances.filter(i =>  getProject(projectId).instances.contains(i.instanceId))
 
-  def getParameter(parameterId: Int) = parameters.find(_.parameterId.equals(parameterId)).get
-  def getInstance(instanceId: Int) = instances.find(_.instanceId.equals(instanceId)).get
-  def getProject(projectId: Int) = projects.find(_.projectId.equals(projectId)).get
+  def getParameter(parameterId: Int) = parameters.find(_.parameterId.equals(parameterId)).getOrElse(Parameter(-1,"","",0,0))
+  def getInstance(instanceId: Int) = instances.find(_.instanceId.equals(instanceId)).getOrElse(Instance(-1,"",Set()))
+  def getProject(projectId: Int) = projects.find(_.projectId.equals(projectId)).getOrElse(Project(-1,"",Set()))
 
   def getMenuInfo = {
 

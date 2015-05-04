@@ -14,8 +14,30 @@
         <link rel="stylesheet" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
         <script src="//code.jquery.com/jquery-1.10.2.js"></script>
         <script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
+        <link href='http://fonts.googleapis.com/css?family=PT+Sans+Narrow&v1' rel='stylesheet' type='text/css' />
+        <link href='http://fonts.googleapis.com/css?family=Open+Sans+Condensed:300&v2' rel='stylesheet' type='text/css'>
+        <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js"></script>
+        <script type="text/javascript" src='@routes.Assets.at("javascripts/jquery.easing.1.3.js")'></script>
+        <script type="text/javascript" src='@routes.Assets.at("javascripts/jquery.mousewheel.js")'></script>
+        <script type="text/javascript" src='@routes.Assets.at("javascripts/jquery.vaccordion.js")'></script>
+        <link rel="stylesheet" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
+        <script src="//code.jquery.com/jquery-1.10.2.js"></script>
+        <script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
+
 
         <style>
+        #accordion .ui-accordion-header a {
+            color: #fff;
+            line-height: 42px;
+            display: block;
+            font-size: 12pt;
+            width: 100%;
+            text-indent: 10px;
+            background-color: transparent;
+        }
+        .ui-accordion-header{
+            background:transparent;
+        }
         #otherContent {
             margin-top : 10 % ;
         }
@@ -153,7 +175,7 @@
 
 
         #parameterContainer {
-            margin-top : 5% ;
+            margin-top : 1% ;
         }
 
         #container {
@@ -283,21 +305,21 @@
         }
         </style>
         <style>
-        .ui-menu {
-        background-color: transparent;
-        border-style: none;
-        margin-left: 1%;
-        margin-top: 5%;
-        width: 150px;
-        }
+        /*.ui-menu {*/
+        /*background-color: transparent;*/
+        /*border-style: none;*/
+        /*margin-left: 1%;*/
+        /*margin-top: 5%;*/
+        /*width: 150px;*/
+        /*}*/
 
-        #menu {
-        float: left;
-        height: 600px;
-        width: 200px;
-        position: fixed;
+        /*#menu {*/
+        /*float: left;*/
+        /*height: 600px;*/
+        /*width: 200px;*/
+        /*position: fixed;*/
 
-        }
+        /*}*/
         #content {
         float: left;
         height: 100%;
@@ -381,42 +403,15 @@
         font-weight: 400;
         }
         </style>
-            <!-- Style for the demo page -->
-        <link rel="stylesheet" type="text/css" href="/stylesheets/demo.css" />
-        <link rel="stylesheet" type="text/css" href="/stylesheets/style.css" />
-        <noscript>
-            <link rel="stylesheet" type="text/css" href="/stylesheets/styleNoJS.css" />
-        </noscript>
 
-        <link href='http://fonts.googleapis.com/css?family=PT+Sans+Narrow&v1' rel='stylesheet' type='text/css' />
-        <link href='http://fonts.googleapis.com/css?family=Open+Sans+Condensed:300&v2' rel='stylesheet' type='text/css'>
-        <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js"></script>
-        <script type="text/javascript" src='@routes.Assets.at("javascripts/jquery.easing.1.3.js")'></script>
-        <script type="text/javascript" src='@routes.Assets.at("javascripts/jquery.mousewheel.js")'></script>
-        <script type="text/javascript" src='@routes.Assets.at("javascripts/jquery.vaccordion.js")'></script>
-        <script type="text/javascript">
-                        $(function() {
-                            $('#va-accordion').vaccordion({
-                                accordionW		: $(window).width(),
-                                accordionH		: $(window).height(),
-                                visibleSlices	: 6,
-                                expandedHeight	: $(window).width()/2,
-                                animOpacity		: 0.2,
-                                contentAnimSpeed: 300
 
-                            });
 
-                        });
-		            </script>
 
     </head>
 
     <body>
         <div id="container">
-
             <div id="header">
-
-
                 <nav role='navigation'>
                     <ul id="ul menu">
 
@@ -431,57 +426,14 @@
                                 </ul>
                             </li>
                         }
-
-
-                        <script>
-
-
-                        </script>
-
-                       @* <script>
-                            var jsonData = JSON.parse(JSON.stringify(@Html(json)));
-                            var projects = jsonData.projects;
-
-                           for (var i = 0; i < projects.length; i++) {
-                                var project = projects[i];
-                                console.log("project = " + project.projectName);
-                                var li = document.createElement('li');
-                                var a = document.createElement('a');
-                                var ul = document.createElement('ul');
-                                a.setAttribute("href","/");
-                                a.id = project.projectId;
-                                a.innerHTML = project.projectName;
-                                li.appendChild(a);
-
-                                for (var j = 0; j < project.instances.length; j++) {
-                                     var instance = project.instances[j];
-                                     console.log("instance = " + instance.instanceName);
-
-                                     var li1 = document.createElement('li');
-                                     var a1 = document.createElement('a');
-                                     a1.setAttribute("onclick","getParametersAjax("+ instanceId+")");
-
-                                     a1.id = instance.instanceId;
-                                     a1.innerHTML = instance.instanceName;
-                                     li1.appendChild(a1);
-                                     ul.appendChild(li1)
-                                }
-
-
-                                li.appendChild(ul);
-                                li.id = project;
-                                document.getElementById("ul menu").appendChild(li);
-                            }
-
-                        </script>*@
                     </ul>
                 </nav>
             </div>
 
-            <div id="menu"> </div>
 
             <div id="content">
                 <div id="parameterContainer" class="parameterContainer">
+
                     <script>
                         function removeOld(){
                            $("#otherContent").remove();
@@ -489,32 +441,27 @@
                         function getParametersAjax(instanceId){
                              console.log("inside getParametersAjax func " + instanceId);
 
-
                              $.ajax({
                                  type : 'GET',
                                  url : "/getParameters?instanceId=" + instanceId,
                                  success : function(data) {
                                      removeOld();
-                                     console.log("get data =  " + data);
                                      var div = document.createElement('div');
                                      div.type = 'text';
                                      div.innerHTML = data;
+                                     div.display = 'none';
                                      document.getElementById("parameterContainer").appendChild(div);
-
-
-
                                      $(function() {
-                            $('#va-accordion').vaccordion({
-                                accordionW		: $(window).width(),
-                                accordionH		: $(window).height(),
-                                visibleSlices	: 6,
-                                expandedHeight	: $(window).width(),
-                                animOpacity		: 0.2,
-                                contentAnimSpeed: 300
+                                        $("#accordion" ).accordion({
+                                          heightStyle: "content",
+                                          collapsible: true,
+                                          animate: 200,
+                                          active: false
+                                        });
+                                     });
 
-                            });
 
-                        });
+
                                  },
                                  error : function(data) {   }
                              });
@@ -522,15 +469,20 @@
 
                          function getDataAjax(instanceId,parameterId){
                              console.log("inside getParameterDataAjax func instanceId= " + instanceId+ "  parameterId= "+ parameterId);
+                            $("#accordion").children("h3").each( function() {
+                                        console.log("this " + this);
+                                        var h3 = $(this).find("h3");
+                                        var ref = $(h3).attr("href");
+                                        $(h3).attr("href", "#");
+                                        console.log("h3 " + h3.id);
 
+                                      });
 
                              $.ajax({
                                  type : 'GET',
                                  url : "/getData?instanceId="+instanceId+"&parameterId=" + parameterId,
                                  success : function(data) {
-                                     console.log("get data =  " + data);
                                      jsonData = JSON.parse(data)
-                                     console.log("parse data =  " + jsonData);
 
                                      var x = jsonData.x;
                                      var y = jsonData.y;
@@ -558,18 +510,6 @@
 
 
 
-                                     $(function() {
-                                        $('#va-accordion').vaccordion({
-                                            accordionW		: $(window).width(),
-                                            accordionH		: $(window).height(),
-                                            visibleSlices	: 6,
-                                            expandedHeight	: $(window).width(),
-                                            animOpacity		: 0.2,
-                                            contentAnimSpeed: 300
-
-                                        });
-
-                                     });
                                  },
                                  error : function(data) {   }
                              });

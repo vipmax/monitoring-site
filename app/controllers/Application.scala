@@ -7,13 +7,14 @@ import play.api.mvc.{Action, _}
 import play.api.libs.json._
 import scala.collection.mutable
 import scala.util.Random
+import play.api.Logger
 
 class Application(dao: Dao) extends Controller {
 
 
   def index () = Action {
     val projectsAndInstances = dao.getProjectsAndInstances()
-    println("projectsAndInstances = " + projectsAndInstances)
+    Logger.debug("projects and instances = " + projectsAndInstances)
 
     Ok(views.html.main("Monitoring", projectsAndInstances))
   }
@@ -63,25 +64,18 @@ class Application(dao: Dao) extends Controller {
   }
 
   def getParameters(instanceId: Int)= Action{
-    println("getParameters() instanceId = " + instanceId)
-    val instanceParameters: Set[Parameter] = dao.getInstanceParameters(instanceId)
-    println("instanceParameters = " + instanceParameters)
+    val instanceParameters = dao.getInstanceParameters(instanceId)
+    Logger.debug(s"instance id $instanceId have ${instanceParameters.size} parameters = " + instanceParameters)
 
-    Ok(views.html.test(instanceParameters))
+    Ok(views.html.paramerters(dao.getInstance(instanceId),instanceParameters))
   }
 
-  def testAjax = Action {
-    println("Ajax")
-    Ok("")
-  }
 
   def getData(instanceId: Int, parameterId: Int) = Action{
-    println("instanceId = " + instanceId)
-    println("parameterId = " + parameterId)
 
     val data = dao.getLastRawData(instanceId,parameterId).toList
     val jsonData = obj("x" -> JsArray(data.map(value => JsString(value._1.toString("yyyy.MM.dd  HH:mm")))), "y" -> JsArray(data.map(value => JsNumber(value._2)))).toString()
-    println("jsonData = " + jsonData)
+    Logger.debug("sending json data = " + jsonData)
     Ok(jsonData)
   }
 

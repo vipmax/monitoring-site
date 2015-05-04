@@ -6,7 +6,6 @@
 GET        /                         @controllers.Application.index()
 GET        /aggregatedGraphic        @controllers.Application.aggregatedGraphic(projectId: Int,instanceId: Int, parameterId: Int, timePeriod: String)
 GET        /rowGraphic               @controllers.Application.rowGraphic(projectId: Int,instanceId: Int)
-GET        /testAjax                 @controllers.Application.testAjax
 GET        /getData                  @controllers.Application.getData(instanceId: Int,parameterId: Int)
 GET        /getParameters            @controllers.Application.getParameters(instanceId: Int)
 

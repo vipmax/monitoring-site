@@ -1,0 +1,23 @@
+@(instance: model.domain.Instance, parameters: scala.collection.immutable.Set[model.domain.Parameter])
+
+
+
+<div id="otherContent">
+    <div id="accordion">
+        @for(parameter <- parameters){
+            <h3 onclick="getDataAjax(@instance.instanceId,@parameter.parameterId)"  style="color: #20b9ff; font-family: 'Open Sans Condensed', sans-serif; font-size: large; font-weight: bolder">@parameter.name</h3>
+            <div >
+                <p onclick="getDataAjax(@instance.instanceId,@parameter.parameterId)"  style="color: #20b9ff; font-family: 'Open Sans Condensed', sans-serif; font-size: large;">parameter @parameter.name in @parameter.unit</p>
+            <ul>
+                <div class="row-fluid">
+                    <div id="chart@parameter.parameterId" class="span5">
+                        <canvas id="myChart@parameter.parameterId" style=" width: 160%"></canvas>
+                    </div>
+
+                </div>
+            </ul>
+            </div>
+        }
+
+    </div>
+</div>
