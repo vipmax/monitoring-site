@@ -1,6 +1,6 @@
 package controllers
 
-import model.domain.Parameter
+import model.domain.{Instance, Project, Parameter}
 import model.{ParameterWithData, Dao}
 import play.api.libs.json.Json.obj
 import play.api.mvc.{Action, _}
@@ -12,9 +12,10 @@ class Application(dao: Dao) extends Controller {
 
 
   def index () = Action {
-    val menuJson = dao.getMenuInfo
+    val projectsAndInstances = dao.getProjectsAndInstances()
+    println("projectsAndInstances = " + projectsAndInstances)
 
-    Ok(views.html.main("Monitoring", menuJson.toString()))
+    Ok(views.html.main("Monitoring", projectsAndInstances))
   }
 
 
@@ -38,10 +39,10 @@ class Application(dao: Dao) extends Controller {
     println("projectId = " + projectId)
     println("instanceId = " + instanceId)
 
-    val header = " " + dao.getInstances.filter(i => i.instanceId.equals(instanceId)).head.name
+    val header = " " + dao.getInstancesFromDb.filter(i => i.instanceId.equals(instanceId)).head.name
 
 
-    val parameterIdsOnInstance: Set[Integer] = dao.getInstances.filter(i => i.instanceId.equals(instanceId)).head.parameters
+    val parameterIdsOnInstance = dao.getInstancesFromDb.filter(i => i.instanceId.equals(instanceId)).head.parameters
 
     val parametersDataList = mutable.MutableList[ParameterWithData]()
 
@@ -55,11 +56,18 @@ class Application(dao: Dao) extends Controller {
 
     println("parametersDataList = " + parametersDataList.foreach(println))
 
-//    val json = obj("x" -> JsArray(lastRawData.map(value => JsString(value._1.toString("yyyy.MM.dd  HH:mm")))),
-//      "y" -> JsArray(lastRawData.map(value => JsNumber(value._2)))).toString()
+
 
 
     Ok(views.html.graph(header, dao.getMenuInfo.toString(),parametersDataList))
+  }
+
+  def getParameters(instanceId: Int)= Action{
+    println("getParameters() instanceId = " + instanceId)
+    val instanceParameters: Set[Parameter] = dao.getInstanceParameters(instanceId)
+    println("instanceParameters = " + instanceParameters)
+
+    Ok(views.html.test(instanceParameters))
   }
 
   def testAjax = Action {
@@ -67,5 +75,14 @@ class Application(dao: Dao) extends Controller {
     Ok("")
   }
 
+  def getData(instanceId: Int, parameterId: Int) = Action{
+    println("instanceId = " + instanceId)
+    println("parameterId = " + parameterId)
+
+    val data = dao.getLastRawData(instanceId,parameterId).toList
+    val jsonData = obj("x" -> JsArray(data.map(value => JsString(value._1.toString("yyyy.MM.dd  HH:mm")))), "y" -> JsArray(data.map(value => JsNumber(value._2)))).toString()
+    println("jsonData = " + jsonData)
+    Ok(jsonData)
+  }
 
 }

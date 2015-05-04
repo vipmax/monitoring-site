@@ -13,17 +13,19 @@ import org.joda.time.{DateTimeZone, DateTime}
 import play.api.Logger
 import play.api.libs.json.{JsString, JsNumber, Json}
 import scala.collection.JavaConversions._
+import scala.collection.mutable
 import scala.concurrent.duration._
 
 
 class Dao(node: String) {
 
+
   val cluster = Cluster.builder().addContactPoint(node).build()
   val session = cluster.connect("monitoring")
 
-  private var projects = getProjects()
-  private var instances = getInstances()
-  private var parameters = getParameters()
+  private var projects = getProjectsFromDb()
+  private var instances = getInstancesFromDb()
+  private var parameters = getParametersFromDb()
 
   scheduleUpdateMetadata()
 
@@ -35,9 +37,9 @@ class Dao(node: String) {
     class UpdateMetaDataTask extends Runnable{
 
       override def run() {
-        val actualProjects =   getProjects()
-        val actualInstances =  getInstances()
-        val actualParameters = getParameters()
+        val actualProjects =   getProjectsFromDb()
+        val actualInstances =  getInstancesFromDb()
+        val actualParameters = getParametersFromDb()
 
         val newProjects =   projects.diff(actualProjects)
         val newInstances =  instances.diff(actualInstances)
@@ -100,13 +102,20 @@ class Dao(node: String) {
 
   }
 
+  def getProjectsAndInstances() =   getProjectsFromDb().map(p => (p, getProjectInstances(p.projectId)))
 
-  def getProjects()   = getRows("projects").  map(r => Project(r.getInt("project_id"),     r.getString("name"), r.getSet("instances",  classOf[Integer]).toSet)).toSet
-  def getInstances()  = getRows("instances"). map(r => Instance(r.getInt("instance_id"),   r.getString("name"), r.getSet("parameters", classOf[Integer]).toSet)).toSet
-  def getParameters() = getRows("parameters").map(r => Parameter(r.getInt("parameter_id"), r.getString("name"), r.getString("unit"),   r.getDouble("min_value"), r.getDouble("max_value"))).toSet
-  def getRows(table:String) = session.execute(select().all().from(table))
-  def getInstances(projectId: Int) = projects.find(_.projectId.equals(projectId)).get.instances
-  def getParameter(parameterId: Int) = parameters.find(_.parameterId.equals(parameterId)).getOrElse(Parameter(-1,"","",0,0))
+
+  def getProjectsFromDb()   = getRowsFromDb("projects").  map(r =>  Project(r.getInt("project_id"),    r.getString("name"), asScalaSet(r.getSet("instances",  classOf[Integer]).map(p=> p.intValue())).toSet)).toSet
+  def getInstancesFromDb()  = getRowsFromDb("instances"). map(r => Instance(r.getInt("instance_id"),   r.getString("name"), asScalaSet(r.getSet("parameters", classOf[Integer]).map(p=> p.intValue())).toSet)).toSet
+  def getParametersFromDb() = getRowsFromDb("parameters").map(r => Parameter(r.getInt("parameter_id"), r.getString("name"), r.getString("unit"),   r.getDouble("min_value"), r.getDouble("max_value"))).toSet
+  def getRowsFromDb(table:String) = session.execute(select().all().from(table))
+
+  def getInstanceParameters(instanceId: Int) = parameters.filter(p => getInstance(instanceId).parameters.contains(p.parameterId))
+  def getProjectInstances(projectId: Int) = instances.filter(i =>  getProject(projectId).instances.contains(i.instanceId))
+
+  def getParameter(parameterId: Int) = parameters.find(_.parameterId.equals(parameterId)).get
+  def getInstance(instanceId: Int) = instances.find(_.instanceId.equals(instanceId)).get
+  def getProject(projectId: Int) = projects.find(_.projectId.equals(projectId)).get
 
   def getMenuInfo = {
 
@@ -149,7 +158,7 @@ class Dao(node: String) {
         instanceM.parameters = parametersOnInstance
         instanceJ += ("parameters", Json.arr(parameters.map(p=>
           Json.obj(
-            "parameterId" -> JsNumber(p.parameterId.toInt),
+            "parameterId" -> JsNumber(p.parameterId),
             "parameterName" -> JsString(p.name),
             "unit" -> JsString(p.unit),
             "maxValue" -> JsNumber(p.max_Value),
@@ -189,9 +198,10 @@ class Dao(node: String) {
 
 object DaoTest extends App {
   val dao = new Dao("127.0.0.1")
-  var info = dao.getMenuInfo
-  println("info = " + info)
+  private val projectInstances = dao.getProjectInstances(1)
+  println("projectInstances = " + projectInstances)
+  private val projectsAndInstances: Set[(Project, Set[Instance])] = dao.getProjectsAndInstances()
+  println("projectsAndInstances = " + projectsAndInstances)
+  System.exit(0)
 
-
-  dao.close
 }
