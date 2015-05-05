@@ -1,23 +1,17 @@
 @(instance: model.domain.Instance, parameters: scala.collection.immutable.Set[model.domain.Parameter])
 
-
-
 <div id="otherContent">
+    <h1 style="color: #20b9ff; font-family: 'Open Sans Condensed', sans-serif; font-size: inherit; font-weight: normal;margin-left: 4%">
+        Instance @instance.name have @parameters.size parameters
+    </h1>
     <div id="accordion">
         @for(parameter <- parameters){
-            <h3 onclick="getDataAjax(@instance.instanceId,@parameter.parameterId)"  style="color: #20b9ff; font-family: 'Open Sans Condensed', sans-serif; font-size: large; font-weight: bolder">@parameter.name</h3>
+            <h3 onclick="getDataAjax(@instance.instanceId,@parameter.parameterId)"  style="color: #20b9ff; font-family: 'Open Sans Condensed', sans-serif; font-size: large; margin-left: 2%">@parameter.name</h3>
             <div >
-                <p onclick="getDataAjax(@instance.instanceId,@parameter.parameterId)"  style="color: #20b9ff; font-family: 'Open Sans Condensed', sans-serif; font-size: large;">parameter @parameter.name in @parameter.unit</p>
-            <ul>
-                <div class="row-fluid">
-                    <div id="chart@parameter.parameterId" class="span5">
-                        <canvas id="myChart@parameter.parameterId" style=" width: 160%"></canvas>
-                    </div>
+                <p onclick="getDataAjax(@instance.instanceId,@parameter.parameterId)"  style="color: #20b9ff; font-family: 'Open Sans Condensed', sans-serif; font-size: large; margin-left: 1%">Parameter @parameter.name in @parameter.unit</p>
 
-                </div>
-            </ul>
+                <div id="chart@parameter.parameterId" style=" direction: inherit; width: 100%; height: 400px;"></div>
             </div>
         }
-
     </div>
 </div>

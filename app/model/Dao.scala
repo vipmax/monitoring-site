@@ -37,9 +37,19 @@ class Dao(node: String) {
     class UpdateMetaDataTask extends Runnable{
 
       override def run() {
-        val actualProjects =   getProjectsFromDb()
-        val actualInstances =  getInstancesFromDb()
-        val actualParameters = getParametersFromDb()
+
+        val (actualProjects,actualInstances,actualParameters) = {
+          try {
+            (getProjectsFromDb(),
+              getInstancesFromDb(),
+              getParametersFromDb())
+          }
+          catch {
+            case e:com.datastax.driver.core.exceptions.NoHostAvailableException =>(Set[Project](),Set[Instance](),Set[Parameter]())
+          }
+        }
+
+
 
         val newProjects =   projects.diff(actualProjects)
         val newInstances =  instances.diff(actualInstances)
