@@ -50,7 +50,7 @@ class Application(dao: Dao) extends Controller {
     for (parameterId <- parameterIdsOnInstance) {
       val parameter = dao.getParameter(parameterId)
       val data = dao.getLastRawData(instanceId, parameterId).toList
-      val jsonData = obj("x" -> JsArray(data.map(value => JsString(value._1.toString("yyyy.MM.dd  HH:mm")))), "y" -> JsArray(data.map(value => JsNumber(value._2)))).toString()
+      val jsonData = obj("x" -> JsArray(data.map(value => JsString(value._1.toString("yyyy-MM-dd  HH:mm")))), "y" -> JsArray(data.map(value => JsNumber(value._2)))).toString()
 
       parametersDataList += ParameterWithData(parameter, jsonData)
     }
@@ -71,12 +71,16 @@ class Application(dao: Dao) extends Controller {
   }
 
 
-  def getData(instanceId: Int, parameterId: Int) = Action{
+  def getData(instanceId: Int, parameterId: Int) = Action {
 
-    val data = dao.getLastRawData(instanceId,parameterId).toList
-    val jsonData = obj("x" -> JsArray(data.map(value => JsString(value._1.toString("yyyy.MM.dd  HH:mm")))), "y" -> JsArray(data.map(value => JsNumber(value._2)))).toString()
-    Logger.debug("sending json data = " + jsonData)
-    Ok(jsonData)
+    val data = dao.getLastRawData(instanceId, parameterId).toList
+
+
+
+    val jsObjects = data.map(v => obj("date" -> v._1.toString("yyyy-MM-dd HH:mm"), "value" -> v._2))
+    val jsArray = JsArray(jsObjects)
+    Logger.debug("sending json data = " + jsArray)
+    Ok(jsArray)
   }
 
 }
