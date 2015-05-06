@@ -4,9 +4,7 @@
 
 # Home page
 GET        /                         @controllers.Application.index()
-GET        /aggregatedGraphic        @controllers.Application.aggregatedGraphic(projectId: Int,instanceId: Int, parameterId: Int, timePeriod: String)
-GET        /rowGraphic               @controllers.Application.rowGraphic(projectId: Int,instanceId: Int)
-GET        /getData                  @controllers.Application.getData(instanceId: Int,parameterId: Int)
+GET        /getData                  @controllers.Application.getData(instanceId: Int, parameterId: Int, timePeriod: String)
 GET        /getParameters            @controllers.Application.getParameters(instanceId: Int)
 
 # Map static resources from the /public folder to the /assets URL path

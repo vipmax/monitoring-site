@@ -1,14 +1,30 @@
 @(instance: model.domain.Instance, parameters: scala.collection.immutable.Set[model.domain.Parameter])
 
 <div id="otherContent">
+
     <h1 style="color: #20b9ff; font-family: 'Open Sans Condensed', sans-serif; font-size: inherit; font-weight: normal;margin-left: 4%">
         Instance @instance.name have @parameters.size parameters
     </h1>
     <div id="accordion">
         @for(parameter <- parameters){
-            <h3 onclick="getDataAjax(@instance.instanceId,@parameter.parameterId)"  style="color: #20b9ff; font-family: 'Open Sans Condensed', sans-serif; font-size: large; margin-left: 2%">@parameter.name</h3>
+            <h3 onclick="getDataAjax(timeperiod,@instance.instanceId,@parameter.parameterId)"  style="color: #20b9ff; font-family: 'Open Sans Condensed', sans-serif; font-size: large; margin-left: 2%">@parameter.name</h3>
             <div >
-                <p onclick="getDataAjax(@instance.instanceId,@parameter.parameterId)"  style="color: #20b9ff; font-family: 'Open Sans Condensed', sans-serif; font-size: large; margin-left: 1%">Parameter @parameter.name in @parameter.unit</p>
+                <div style="margin-left: 5%">
+                    <a style="float:left;color: #20b9ff; font-family: 'Open Sans Condensed', sans-serif; font-size: large; margin-left: 1%">Parameter @parameter.name in @parameter.unit</a>
+
+                    <a onclick="getDataAjax(timeperiod,@instance.instanceId,@parameter.parameterId)"  style="float:right;color: #20b9ff; font-family: 'Open Sans Condensed', sans-serif; font-size: large; margin-left: 1%">Update</a>
+                    <a onclick="getDataAjax('1Y',@instance.instanceId,@parameter.parameterId)"  style="float: right; color: #20b9ff; font-family: 'Open Sans Condensed', sans-serif; font-size: large; margin-left: 1%">1Y</a>
+                    <a onclick="getDataAjax('6M',@instance.instanceId,@parameter.parameterId)"  style="float: right; color: #20b9ff; font-family: 'Open Sans Condensed', sans-serif; font-size: large; margin-left: 1%">6M</a>
+                    <a onclick="getDataAjax('1M',@instance.instanceId,@parameter.parameterId)"  style="float: right; color: #20b9ff; font-family: 'Open Sans Condensed', sans-serif; font-size: large; margin-left: 1%">1M</a>
+                    <a onclick="getDataAjax('1W',@instance.instanceId,@parameter.parameterId)"  style="float: right; color: #20b9ff; font-family: 'Open Sans Condensed', sans-serif; font-size: large; margin-left: 1%">1W</a>
+                    <a onclick="getDataAjax('1d',@instance.instanceId,@parameter.parameterId)"  style="float: right; color: #20b9ff; font-family: 'Open Sans Condensed', sans-serif; font-size: large; margin-left: 1%">1d</a>
+                    <a onclick="getDataAjax('1h',@instance.instanceId,@parameter.parameterId)"  style="float: right; color: #20b9ff; font-family: 'Open Sans Condensed', sans-serif; font-size: large; margin-left: 1%">1h</a>
+                    <a onclick="getDataAjax('1m',@instance.instanceId,@parameter.parameterId)"  style="float: right; color: #20b9ff; font-family: 'Open Sans Condensed', sans-serif; font-size: large; margin-left: 1%">1m</a>
+
+
+
+                </div>
+
 
                 <div id="chart@parameter.parameterId" style=" direction: inherit; width: 100%; height: 400px;"></div>
             </div>

@@ -23,6 +23,20 @@
         <link rel="stylesheet" type="text/css" href="@routes.Assets.at("css/main.css")">
 
         <script>
+                        function facechange (objName) {
+                            if ( $(objName).css('display') == 'none' ) {
+                                $(objName).animate({height: 'show'}, 300);
+                            } else {
+                                $(objName).animate({height: 'hide'}, 300);
+                            }
+                        }
+
+                        var timeperiod = '1m'
+                        function switchPeriod(period){
+                            timeperiod = period
+                            console.log("timeperiod " + timeperiod)
+                        }
+
                         function removeOld(){
                            $("#otherContent").remove();
                         }
@@ -55,78 +69,104 @@
                              });
                         }
 
-                        function getDataAjax(instanceId,parameterId){
-                             console.log("inside getDataAjax func instanceId= " + instanceId+ "  parameterId= "+ parameterId);
+                        function getDataAjax(period,instanceId,parameterId){
+                             console.log("inside getDataAjax func instanceId= " + instanceId+ "  parameterId= "+ parameterId +" timePeriod=" + timeperiod);
+                             switchPeriod(period)
 
                              $.ajax({
                                  type : 'GET',
-                                 url : "/getData?instanceId="+instanceId+"&parameterId=" + parameterId,
+                                 url : "/getData?instanceId="+instanceId+"&parameterId=" + parameterId+"&timePeriod=" + timeperiod,
                                  success : function(data) {
                                      jsonData = JSON.parse(JSON.stringify(data));
-                                     console.log("jsonData " + jsonData);
 
-                                    var chartName = "chart"+parameterId;
-                                    var chart = AmCharts.makeChart(chartName, {
-                                                    "type": "serial",
-                                                    "pathToImages": "http://cdn.amcharts.com/lib/3/images/",
-                                                    "categoryField": "date",
-                                                    "dataDateFormat": "YYYY-MM-DD HH:NN",
-                                                    "maxSelectedSeries": 0,
-                                                    "mouseWheelScrollEnabled": true,
-                                                    "zoomOutOnDataUpdate": false,
-                                                    "theme": "light",
-                                                    "categoryAxis": {
-                                                        "minPeriod": "mm",
-                                                        "parseDates": true
-                                                    },
-                                                    "chartCursor": {
-                                                        "animationDuration": 0,
-                                                        "categoryBalloonDateFormat": "YYYY-MM-DD HH:NN"
-                                                    },
-                                                    "chartScrollbar": {
-                                                        "autoGridCount": true,
-                                                        "backgroundAlpha": 0.21,
-                                                        "dragIconHeight": 38,
-                                                        "graphType": "line",
-                                                        "gridCount": 1,
-                                                        "maximum": 2,
-                                                        "scrollbarHeight": 54,
-                                                        "scrollDuration": 6
-                                                    },
-                                                    "trendLines": [],
-                                                    "graphs": [
-                                                        {
-                                                            "bullet": "round",
-                                                            "hideBulletsCount": 50,
-                                                            "gapPeriod": 1,
-                                                            "id": "AmGraph-1",
-                                                            "title": "graph 1",
-                                                            "type": "smoothedLine",
-                                                            "valueAxis": "Not set",
-                                                            "valueField": "value"
-                                                        }
-                                                    ],
+                                     var chartName = "chart"+parameterId;
+                                     var minPeriod = "mm";
+
+                                     if(timeperiod == '1m'){
+                                        console.log("need render 1m chart ");
+                                        minPeriod = "mm"
+
+                                     }
+
+                                     if(timeperiod == '1h'){
+                                        console.log("need render 1h chart ");
+                                        minPeriod = "hh"
+                                     }
+
+                                     if(timeperiod == '1h'){
+                                        console.log("need render 1h chart ");
+                                        minPeriod = "hh"
+                                     }
+
+                                     if(timeperiod == '1h'){
+                                        console.log("need render 1h chart ");
+                                        minPeriod = "hh"
+                                     }
+
+                                     if(timeperiod == '1h'){
+                                        console.log("need render 1h chart ");
+                                        minPeriod = "hh"
+                                     }
+
+                                     var chart = AmCharts.makeChart(chartName, {
+                                                         "type": "serial",
+                                                         "pathToImages": "http://cdn.amcharts.com/lib/3/images/",
+                                                         "categoryField": "date",
+                                                         "dataDateFormat": "YYYY-MM-DD HH:NN",
+                                                         "maxSelectedSeries": 0,
+                                                         "mouseWheelScrollEnabled": true,
+                                                         "zoomOutOnDataUpdate": false,
+                                                         "theme": "light",
+                                                         "categoryAxis": {
+                                                             "minPeriod":  minPeriod,
+                                                             "parseDates": true
+                                                         },
+                                                         "chartCursor": {
+                                                             "animationDuration": 0,
+                                                             "categoryBalloonDateFormat": "YYYY-MM-DD HH:NN"
+                                                         },
+                                                         "chartScrollbar": {
+                                                             "autoGridCount": true,
+                                                             "backgroundAlpha": 0.21,
+                                                             "dragIconHeight": 38,
+                                                             "graphType": "line",
+                                                             "gridCount": 1,
+                                                             "maximum": 2,
+                                                             "scrollbarHeight": 54,
+                                                             "scrollDuration": 6
+                                                         },
+                                                         "trendLines": [],
+                                                         "graphs": [
+                                                             {
+                                                                 "minHorizontalGap" : 10,
+                                                                 "bullet": "round",
+                                                                 "hideBulletsCount": 50,
+                                                                 "gapPeriod": 10,
+                                                                 "id": "AmGraph-1",
+                                                                 "title": "graph 1",
+                                                                 "type": "column",
+                                                                 "valueAxis": "Not set",
+                                                                 "valueField": "value"
+                                                             }
+                                                         ],
 
 
-                                                    "export": {
-                                                        "enabled": true,
-                                                        "libs": {
-                                                            "path": "http://www.amcharts.com/lib/3/plugins/export/libs/"
-                                                        }
+                                                         "export": {
+                                                             "enabled": true,
+                                                             "libs": {
+                                                                 "path": "http://www.amcharts.com/lib/3/plugins/export/libs/"
+                                                             }
 
-                                                    },
-                                                    "dataProvider": data
+                                                         },
+                                                         "dataProvider": data
 
-                                                }
-                                        );
-                                    chart.addListener("rendered", zoomChart);
-
-                                    zoomChart();
-
-                                    function zoomChart() {
-                                        chart.zoomToIndexes(chart.dataProvider.length - 40, chart.dataProvider.length - 1);
-                                    }
-
+                                                     });
+                                         chart.connect = false;
+                                         chart.addListener("rendered", zoomChart);
+                                         zoomChart();
+                                         function zoomChart() {
+                                             chart.zoomToIndexes(chart.dataProvider.length - 40, chart.dataProvider.length - 1);
+                                         }
 
 
                                  },
@@ -142,13 +182,12 @@
 
     <body>
         <div id="container">
+
             <div id="header">
                 <nav role='navigation'>
                     <ul id="ul menu">
 
-                        <li><a href="/">@title Home</a></li>
-
-
+                        <li><a href="/">@title </a></li>
 
                         @for((project,instances)<- projectAndInstances){
                             <li id="project @project.projectId" style="font-size: larger" ><a onclick="showInstances(@project.projectId)">@project.name</a>
@@ -163,6 +202,8 @@
                     </ul>
                 </nav>
             </div>
+
+
 
                 @*ajax will use and modify this tag*@
                 <div id="parameterContainer" class="parameterContainer"/>

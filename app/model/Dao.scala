@@ -50,16 +50,6 @@ class Dao(node: String) {
         }
 
 
-
-        val newProjects =   projects.diff(actualProjects)
-        val newInstances =  instances.diff(actualInstances)
-        val newParameters = parameters.diff(actualParameters)
-
-
-        if (newProjects.nonEmpty)   Logger.debug("Found new projects = " + newProjects)
-        if (newInstances.nonEmpty)  Logger.debug("Found new instances = " + newInstances)
-        if (newParameters.nonEmpty) Logger.debug("Found new parameters = " + newParameters)
-
         projects =   actualProjects
         instances =  actualInstances
         parameters = actualParameters
@@ -78,42 +68,46 @@ class Dao(node: String) {
 
     val timeSince = DateTime.now.withZone(DateTimeZone.forOffsetHours(3)).minusHours(1).withSecondOfMinute(0).withMillisOfSecond(0).toString()
     val defaultTimePeriod = "1m"
-    val query = ("select time, value from raw_data " +
-      "where instance_id = %d and parameter_id = %d and time_period = '%s' and time >= '%s'")
-      .format(instanceId, parameterId, defaultTimePeriod, timeSince)
+    val query = s"select time, value from raw_data where instance_id = $instanceId and parameter_id = $parameterId and time_period = '$defaultTimePeriod' and time >= '$timeSince'"
 
     println("query = " + query)
 
-    val lastRawData = session.execute(query).map(row => (new DateTime(row.getDate("time")), row.getDouble("value")))
+    val lastRawData = session.execute(query).map(row => (new DateTime(row.getDate("time")).toString("yyyy-MM-dd HH:mm"), row.getDouble("value")))
 
     lastRawData
   }
-  def getLastAggregatedData(projectId: Int,instanceId: Int, parameterId: Int, timePeriod: String) = {
+
+
+
+
+  def getLastAggregatedData(instanceId: Int, parameterId: Int, timePeriod: String) = {
+    val projectId = getProjectId(instanceId)
+    println("projectId = " + projectId)
+    println("instanceId = " + instanceId)
+    println("parameterId = " + parameterId)
+    println("timePeriod = " + timePeriod)
 
     val now = DateTime.now.withZone(DateTimeZone.forOffsetHours(4)).withSecondOfMinute(0).withMillisOfSecond(0)
+
     val timeSince = timePeriod match {
-      case "1h" => now.withMinuteOfHour(0).toString()
-      case "1d" => now.withHourOfDay(0).getMillis
+      case "1h" => now.withHourOfDay(0).toString()
+      case "1d" => now.withDayOfWeek(0).getMillis
       case "1w" => now.withDayOfWeek(0).getMillis
-      case "1m" => now.withDayOfMonth(0).getMillis
+      case "1M" => now.withDayOfMonth(0).getMillis
       case "1y" => now.withDayOfYear(0).getMillis
       case _ =>    now.withMinuteOfHour(0).getMillis
     }
 
-
-    val query = ("select time, max_value, min_value, avg_value, sum_value " +
-      "from aggregated_data" +
-      " where project_id = %d and instance_id = %d and parameter_id = %d and time_period = '%s' and time >= '%s'").
-      format(projectId, instanceId, parameterId, timePeriod, timeSince)
-
-    session.execute(query).
-      map(row => (row.getDate("time"), row.getDouble("max_value"), row.getDouble("min_value"), row.getDouble("avg_value"), row.getDouble("sum_value")))
+    val query = s"select time, avg_value from aggregated_data where project_id = $projectId and instance_id = $instanceId and parameter_id = $parameterId and time_period = '$timePeriod' and time >= '$timeSince'"
+    println("query = " + query)
+    session.execute(query).map(row =>(new DateTime(row.getDate("time")).toString("yyyy-MM-dd HH"),  row.getDouble("avg_value")))
 
 
   }
 
-  def getProjectsAndInstances() =   getProjectsFromDb().map(p => (p, getProjectInstances(p.projectId)))
 
+  def getProjectId(instanceId: Int) = projects.find(_.instances.contains(instanceId)).get.projectId
+  def getProjectsAndInstances() =   projects.map(p => (p, getProjectInstances(p.projectId)))
 
   def getProjectsFromDb()   = getRowsFromDb("projects").  map(r =>  Project(r.getInt("project_id"),    r.getString("name"), asScalaSet(r.getSet("instances",  classOf[Integer]).map(p=> p.intValue())).toSet)).toSet
   def getInstancesFromDb()  = getRowsFromDb("instances"). map(r => Instance(r.getInt("instance_id"),   r.getString("name"), asScalaSet(r.getSet("parameters", classOf[Integer]).map(p=> p.intValue())).toSet)).toSet
@@ -208,10 +202,10 @@ class Dao(node: String) {
 
 object DaoTest extends App {
   val dao = new Dao("127.0.0.1")
-  private val projectInstances = dao.getProjectInstances(1)
-  println("projectInstances = " + projectInstances)
-  private val projectsAndInstances: Set[(Project, Set[Instance])] = dao.getProjectsAndInstances()
-  println("projectsAndInstances = " + projectsAndInstances)
+
+  private val count = dao.getRowsFromDb("raw_data").size
+  println("count = " + count)
   System.exit(0)
+  
 
 }

@@ -44,7 +44,7 @@ nav {
 }
 
 nav ul {
-    display: inline-table;
+    display: inline-block;
     list-style: none;
     position: relative;
 }
@@ -89,9 +89,7 @@ nav ul ul {
 }
 nav ul ul li {
     float: none;
-
     position: relative;
-    display: list-item;
 }
 nav ul ul li a {
 
