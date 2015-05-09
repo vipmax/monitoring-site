@@ -5,7 +5,9 @@
 # Home page
 GET        /                         @controllers.Application.index()
 GET        /getData                  @controllers.Application.getData(instanceId: Int, parameterId: Int, timePeriod: String)
+GET        /getProjectData           @controllers.Application.getProjectData(projectId: Int, parameterId: Int, timePeriod: String)
 GET        /getParameters            @controllers.Application.getParameters(instanceId: Int)
+GET        /getProjectParameters     @controllers.Application.getProjectParameters(projectId: Int)
 
 # Map static resources from the /public folder to the /assets URL path
 GET        /assets/*file             controllers.Assets.at(path="/public", file)

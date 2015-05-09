@@ -1,0 +1,32 @@
+@(project: model.domain.Project,instances: scala.collection.Set[String], parameters: scala.collection.immutable.Set[model.domain.Parameter])
+
+<div id="otherContent">
+
+    <h1 style="color: #20b9ff; font-family: 'Open Sans Condensed', sans-serif; font-size: inherit; font-weight: normal;margin-left: 4%">
+        Project @project.name have @parameters.size parameters
+    </h1>
+    <div id="accordion">
+    @for(parameter <- parameters){
+        <h3 onclick="getProjectDataAjax(timeperiod,@project.projectId,@instances.mkString("['","','","']"),@parameter.parameterId)"  style="color: #20b9ff; font-family: 'Open Sans Condensed', sans-serif; font-size: large; margin-left: 2%">@parameter.name</h3>
+        <div >
+            <div style="margin-left: 5%">
+                <a style="float:left;color: #20b9ff; font-family: 'Open Sans Condensed', sans-serif; font-size: large; margin-left: 1%">Parameter @parameter.name in @parameter.unit</a>
+
+                <a onclick="getProjectDataAjax(timeperiod,@project.projectId,@instances.mkString("['","','","']"),@parameter.parameterId)"  style="float:right;color: #20b9ff; font-family: 'Open Sans Condensed', sans-serif; font-size: large; margin-left: 1%">Update</a>
+                <a onclick="getProjectDataAjax('1Y',@project.projectId,@instances.mkString("['","','","']"),@parameter.parameterId)"  style="float: right; color: #20b9ff; font-family: 'Open Sans Condensed', sans-serif; font-size: large; margin-left: 1%">1Y</a>
+                <a onclick="getProjectDataAjax('1M',@project.projectId,@instances.mkString("['","','","']"),@parameter.parameterId)"  style="float: right; color: #20b9ff; font-family: 'Open Sans Condensed', sans-serif; font-size: large; margin-left: 1%">1M</a>
+                <a onclick="getProjectDataAjax('1w',@project.projectId,@instances.mkString("['","','","']"),@parameter.parameterId)"  style="float: right; color: #20b9ff; font-family: 'Open Sans Condensed', sans-serif; font-size: large; margin-left: 1%">1w</a>
+                <a onclick="getProjectDataAjax('1d',@project.projectId,@instances.mkString("['","','","']"),@parameter.parameterId)"  style="float: right; color: #20b9ff; font-family: 'Open Sans Condensed', sans-serif; font-size: large; margin-left: 1%">1d</a>
+                <a onclick="getProjectDataAjax('1h',@project.projectId,@instances.mkString("['","','","']"),@parameter.parameterId)"  style="float: right; color: #20b9ff; font-family: 'Open Sans Condensed', sans-serif; font-size: large; margin-left: 1%">1h</a>
+                <a onclick="getProjectDataAjax('1m',@project.projectId,@instances.mkString("['","','","']"),@parameter.parameterId)"  style="float: right; color: #20b9ff; font-family: 'Open Sans Condensed', sans-serif; font-size: large; margin-left: 1%">1m</a>
+
+
+
+            </div>
+
+
+            <div id="projectChart@parameter.parameterId" style=" direction: inherit; width: 100%; height: 400px;"></div>
+        </div>
+    }
+    </div>
+</div>

@@ -23,6 +23,7 @@
         <link rel="stylesheet" type="text/css" href="@routes.Assets.at("css/main.css")">
 
         <script>
+
                         function facechange (objName) {
                             if ( $(objName).css('display') == 'none' ) {
                                 $(objName).animate({height: 'show'}, 300);
@@ -39,6 +40,33 @@
 
                         function removeOld(){
                            $("#otherContent").remove();
+                        }
+
+                        function getProjectInstancesParameters(projectId){
+                            console.log("inside getProjectInstancesParameters func " + projectId);
+                        $.ajax({
+                            type : 'GET',
+                            url : "/getProjectParameters?projectId=" + projectId,
+                            success : function(data) {
+                                removeOld();
+                                var div = document.createElement('div');
+                                div.type = 'text';
+                                div.innerHTML = data;
+                                div.display = 'none';
+                                document.getElementById("parameterContainer").appendChild(div);
+                                $(function() {
+                                    $("#accordion" ).accordion({
+                                        heightStyle: "content",
+                                        collapsible: true,
+                                        animate: 200,
+                                        active: false
+                                    });
+                                });
+
+                        },
+                        error : function(data) {   }
+                        });
+
                         }
                         function getParametersAjax(instanceId){
                              console.log("inside getParametersAjax func " + instanceId);
@@ -92,21 +120,26 @@
                                         console.log("need render 1h chart ");
                                         minPeriod = "hh"
                                      }
-
-                                     if(timeperiod == '1h'){
-                                        console.log("need render 1h chart ");
-                                        minPeriod = "hh"
+                                     if(timeperiod == '1d'){
+                                        console.log("need render 1d chart ");
+                                        minPeriod = "DD"
                                      }
 
-                                     if(timeperiod == '1h'){
-                                        console.log("need render 1h chart ");
-                                        minPeriod = "hh"
+                                     if(timeperiod == '1w'){
+                                        console.log("need render 1w chart ");
+                                        minPeriod = "WW"
                                      }
 
-                                     if(timeperiod == '1h'){
-                                        console.log("need render 1h chart ");
-                                        minPeriod = "hh"
+                                     if(timeperiod == '1M'){
+                                        console.log("need render 1M chart ");
+                                        minPeriod = "MM"
                                      }
+                                     if(timeperiod == '1Y'){
+                                        console.log("need render 1Y chart ");
+                                        minPeriod = "YYYY"
+                                     }
+
+
 
                                      var chart = AmCharts.makeChart(chartName, {
                                                          "type": "serial",
@@ -173,6 +206,119 @@
                                  error : function(data) {   }
                              });
                         }
+                        function getProjectDataAjax(period,projectId,instances,parameterId){
+                            console.log("inside getProjectDataAjax func projectId= " + projectId+ "instances = "+instances +  " parameterId= "+ parameterId +" timePeriod=" + timeperiod);
+                            switchPeriod(period);
+
+                            $.ajax({
+                                type : 'GET',
+                                url : "/getProjectData?projectId="+projectId+"&parameterId=" + parameterId+"&timePeriod=" + timeperiod,
+                            success : function(data) {
+                                console.log("instances = "+instances);
+                                var chartName = "projectChart" + parameterId ;
+                                var minPeriod = "mm" ;
+
+                                if ( timeperiod == '1m' ) {
+                                console.log ( "need render 1m chart " ) ;
+                                minPeriod = "mm"
+                                }
+
+                                if ( timeperiod == '1h' ) {
+                                console.log ( "need render 1h chart " ) ;
+                                minPeriod = "hh"
+                                }
+                                if ( timeperiod == '1d' ) {
+                                console.log ( "need render 1d chart " ) ;
+                                minPeriod = "DD"
+                                }
+
+                                if ( timeperiod == '1w' ) {
+                                console.log ( "need render 1w chart " ) ;
+                                minPeriod = "WW"
+                                }
+
+                                if ( timeperiod == '1M' ) {
+                                console.log ( "need render 1M chart " ) ;
+                                minPeriod = "MM"
+                                }
+                                if ( timeperiod == '1Y' ) {
+                                console.log ( "need render 1Y chart " ) ;
+                                minPeriod = "YYYY"
+                                }
+
+
+
+
+
+                                var chart = AmCharts.makeChart ( chartName, {
+                                "type" : "serial",
+                                "pathToImages" : "http://cdn.amcharts.com/lib/3/images/",
+                                "categoryField" : "date",
+                                "dataDateFormat" : "YYYY-MM-DD HH:NN",
+                                "maxSelectedSeries" : 0,
+                                "mouseWheelScrollEnabled" : true,
+                                "zoomOutOnDataUpdate" : false,
+                                "theme" : "light",
+                                "categoryAxis" : {
+                                "minPeriod" : minPeriod,
+                                "parseDates" : true
+                                },
+                                "chartCursor" : {
+                                "animationDuration" : 0,
+                                "categoryBalloonDateFormat" : "YYYY-MM-DD HH:NN"
+                                },
+                                "chartScrollbar" : {
+                                "autoGridCount" : true,
+                                "backgroundAlpha" : 0.21,
+                                "dragIconHeight" : 38,
+                                "graphType" : "line",
+                                "gridCount" : 1,
+                                "maximum" : 2,
+                                "scrollbarHeight" : 54,
+                                "scrollDuration" : 6
+                                },
+                                "legend": {
+                                "useGraphSettings": true
+                                },
+
+
+                                "export" : {
+                                "enabled" : true,
+                                "libs" : {
+                                "path" : "http://www.amcharts.com/lib/3/plugins/export/libs/"
+                                }
+
+                                },
+                                "dataProvider" : data
+
+                                } ) ;
+
+
+                                for ( var i = 0 ; i < instances.length ; i++ ) {
+                                    var instance = instances[i]
+                                    var g = new AmCharts.AmGraph ();
+                                    g.bullet = "round" ;
+                                    g.id = "AmGraph-" +instance;
+                                    g.title = instance ;
+                                    g.valueField = instance ;
+                                    g.title = instance;
+                                    g.type = "column" ;
+                                    chart.addGraph (g);
+                                }
+
+                                chart.connect = false;
+                                chart.addListener("rendered", zoomChart);
+                                zoomChart();
+                                function zoomChart() {
+                                chart.zoomToIndexes(chart.dataProvider.length - 40, chart.dataProvider.length - 1);
+                                }
+
+                                },
+                                error : function(data) { }
+                                });
+                        }
+
+
                     </script>
 
 
@@ -190,7 +336,7 @@
                         <li><a href="/">@title </a></li>
 
                         @for((project,instances)<- projectAndInstances){
-                            <li id="project @project.projectId" style="font-size: larger" ><a onclick="showInstances(@project.projectId)">@project.name</a>
+                            <li id="project @project.projectId" style="font-size: larger" ><a onclick="getProjectInstancesParameters(@project.projectId)">@project.name</a>
                                 <ul>
                                     @for(instance <- instances) {
                                         <li id="@instance.instanceId" onclick="getParametersAjax(@instance.instanceId)"><a>@instance.name</a></li>

@@ -5,15 +5,14 @@ package model
  */
 
 
+
 import akka.actor.ActorSystem
 import com.datastax.driver.core.Cluster
 import com.datastax.driver.core.querybuilder.QueryBuilder.select
 import model.domain._
 import org.joda.time.{DateTimeZone, DateTime}
-import play.api.Logger
 import play.api.libs.json.{JsString, JsNumber, Json}
 import scala.collection.JavaConversions._
-import scala.collection.mutable
 import scala.concurrent.duration._
 
 
@@ -87,22 +86,21 @@ class Dao(node: String) {
     println("parameterId = " + parameterId)
     println("timePeriod = " + timePeriod)
 
-    val now = DateTime.now.withZone(DateTimeZone.forOffsetHours(4)).withSecondOfMinute(0).withMillisOfSecond(0)
+    val now = DateTime.now.withZone(DateTimeZone.forOffsetHours(4)).withMinuteOfHour(0).withSecondOfMinute(0).withMillisOfSecond(0)
 
     val timeSince = timePeriod match {
-      case "1h" => now.withHourOfDay(0).toString()
-      case "1d" => now.withDayOfWeek(0).getMillis
-      case "1w" => now.withDayOfWeek(0).getMillis
-      case "1M" => now.withDayOfMonth(0).getMillis
-      case "1y" => now.withDayOfYear(0).getMillis
-      case _ =>    now.withMinuteOfHour(0).getMillis
+      case "1h" => now.minusDays(1).toString()
+      case "1d" => now.withDayOfWeek(1).withHourOfDay(0).toString()
+      case "1w" => now.withDayOfMonth(1).withHourOfDay(0).toString()
+      case "1M" => now.withDayOfMonth(1).withHourOfDay(0).toString()
+      case "1Y" => now.withDayOfYear(1).withHourOfDay(0).toString()
+      case _ =>    now.withHourOfDay(0).withMinuteOfHour(0).toString()
     }
 
     val query = s"select time, avg_value from aggregated_data where project_id = $projectId and instance_id = $instanceId and parameter_id = $parameterId and time_period = '$timePeriod' and time >= '$timeSince'"
     println("query = " + query)
-    session.execute(query).map(row =>(new DateTime(row.getDate("time")).toString("yyyy-MM-dd HH"),  row.getDouble("avg_value")))
-
-
+    val data = session.execute(query).map(row =>(new DateTime(row.getDate("time")).toString("yyyy-MM-dd HH:mm"),  row.getDouble("avg_value"))).toList
+    data
   }
 
 
@@ -193,19 +191,5 @@ class Dao(node: String) {
     session.close
     cluster.close
   }
-
-
-}
-
-
-
-
-object DaoTest extends App {
-  val dao = new Dao("127.0.0.1")
-
-  private val count = dao.getRowsFromDb("raw_data").size
-  println("count = " + count)
-  System.exit(0)
-  
 
 }
