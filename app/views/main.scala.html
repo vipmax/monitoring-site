@@ -20,10 +20,34 @@
         <script src="http://amcharts.com/lib/3/plugins/export/export.js" type="text/javascript"></script>
         <link href="http://amcharts.com/lib/3/plugins/export/export.css" rel="stylesheet" type="text/css">
 
+        <link rel="stylesheet" type="text/css" href="@routes.Assets.at("css/jquery.datetimepicker.css")">
+        <script src="@routes.Assets.at("javascripts/jquery.datetimepicker.js")"></script>
+
         <link rel="stylesheet" type="text/css" href="@routes.Assets.at("css/main.css")">
 
         <script>
+                        var sinceTime = "default";
+                        var untilTime = "default";
+                        function initDateTimePickers(parameterId){
+                            var s = '#dateTimePickerStart'+ parameterId;
+                            var e = '#dateTimePickerEnd'+ parameterId;
 
+                                jQuery(s).datetimepicker({
+                                        format:'Y-m-d H:i',
+                                        onShow:function( ct ){
+                                                   this.setOptions({
+                                                         maxDate:jQuery(e).val()?jQuery(e).val():false
+                                                })
+                                        },
+                                        onChangeDateTime:function(date){ sinceTime = date.dateFormat('Y-m-d_H:i' ); console.log("sinceTime = " + sinceTime);  }
+                                });
+                                jQuery(e).datetimepicker({
+                                    startDate: new Date( ).toString(),
+                                    format:'Y-m-d H:i',
+                                    onChangeDateTime:function(date){ untilTime = date.dateFormat('Y-m-d_H:i'); console.log("untilTime = " + untilTime);  }
+
+                                });
+                        }
                         function facechange (objName) {
                             if ( $(objName).css('display') == 'none' ) {
                                 $(objName).animate({height: 'show'}, 300);
@@ -92,20 +116,27 @@
 
 
 
+
                                  },
                                  error : function(data) {   }
                              });
                         }
 
+                        function showContent(period,instanceId,parameterId) {
+                            initDateTimePickers(parameterId);
+                            getDataAjax(period,instanceId,parameterId);
+                        }
                         function getDataAjax(period,instanceId,parameterId){
-                             console.log("inside getDataAjax func instanceId= " + instanceId+ "  parameterId= "+ parameterId +" timePeriod=" + timeperiod);
+                             console.log("inside getDataAjax func instanceId= " + instanceId+ "  parameterId= "+ parameterId +" timePeriod=" + timeperiod +" sinceTime=" + sinceTime +" untilTime=" + untilTime);
                              switchPeriod(period)
 
-                             $.ajax({
+
+
+                        $.ajax({
                                  type : 'GET',
-                                 url : "/getData?instanceId="+instanceId+"&parameterId=" + parameterId+"&timePeriod=" + timeperiod,
+                                 url : "/getData?instanceId="+instanceId+"&parameterId=" + parameterId+"&timePeriod=" + timeperiod+"&sinceTime=" + sinceTime+"&untilTime=" + untilTime,
                                  success : function(data) {
-                                     jsonData = JSON.parse(JSON.stringify(data));
+
 
                                      var chartName = "chart"+parameterId;
                                      var minPeriod = "mm";
@@ -200,6 +231,7 @@
                                          function zoomChart() {
                                              chart.zoomToIndexes(chart.dataProvider.length - 40, chart.dataProvider.length - 1);
                                          }
+
 
 
                                  },
@@ -353,6 +385,7 @@
 
                 @*ajax will use and modify this tag*@
                 <div id="parameterContainer" class="parameterContainer"/>
+
 
         </div>
     </body>

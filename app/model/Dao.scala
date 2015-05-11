@@ -63,11 +63,15 @@ class Dao(node: String) {
 
   }
 
-  def getLastRawData(instanceId: Int, parameterId: Int) = {
+  def  getLastRawData(instanceId: Int, parameterId: Int, sinceDateTime: DateTime, untilTime: DateTime) = {
 
-    val timeSince = DateTime.now.withZone(DateTimeZone.forOffsetHours(3)).minusHours(1).withSecondOfMinute(0).withMillisOfSecond(0).toString()
+    val (startTime,endTime) = {
+      if(sinceDateTime.equals(new DateTime(0)))
+        (DateTime.now.withZone(DateTimeZone.forOffsetHours(3)).minusHours(1).withSecondOfMinute(0).withMillisOfSecond(0).toString(), DateTime.now)
+      else (sinceDateTime,untilTime)
+    }
     val defaultTimePeriod = "1m"
-    val query = s"select time, value from raw_data where instance_id = $instanceId and parameter_id = $parameterId and time_period = '$defaultTimePeriod' and time >= '$timeSince'"
+    val query = s"select time, value from raw_data where instance_id = $instanceId and parameter_id = $parameterId and time_period = '$defaultTimePeriod' and time >= '$startTime' and time <= '$endTime'"
 
     println("query = " + query)
 
@@ -79,22 +83,25 @@ class Dao(node: String) {
 
 
 
-  def getLastAggregatedData(instanceId: Int, parameterId: Int, timePeriod: String) = {
+  def getLastAggregatedData(instanceId: Int, parameterId: Int, timePeriod: String, sinceDateTime: DateTime,untilTime: DateTime) = {
     val projectId = getProjectId(instanceId)
-    println("projectId = " + projectId)
-    println("instanceId = " + instanceId)
-    println("parameterId = " + parameterId)
-    println("timePeriod = " + timePeriod)
+
 
     val now = DateTime.now.withZone(DateTimeZone.forOffsetHours(4)).withMinuteOfHour(0).withSecondOfMinute(0).withMillisOfSecond(0)
 
-    val timeSince = timePeriod match {
-      case "1h" => now.minusDays(1).toString()
-      case "1d" => now.withDayOfWeek(1).withHourOfDay(0).toString()
-      case "1w" => now.withDayOfMonth(1).withHourOfDay(0).toString()
-      case "1M" => now.withDayOfMonth(1).withHourOfDay(0).toString()
-      case "1Y" => now.withDayOfYear(1).withHourOfDay(0).toString()
-      case _ =>    now.withHourOfDay(0).withMinuteOfHour(0).toString()
+    val timeSince = {
+      if(sinceDateTime.equals(new DateTime(0)))
+        timePeriod match {
+        case "1h" => now.minusDays(1).toString()
+        case "1d" => now.withDayOfWeek(1).withHourOfDay(0).toString()
+        case "1w" => now.withDayOfMonth(1).withHourOfDay(0).toString()
+        case "1M" => now.withDayOfMonth(1).withHourOfDay(0).toString()
+        case "1Y" => now.withDayOfYear(1).withHourOfDay(0).toString()
+        case _ => now.withHourOfDay(0).withMinuteOfHour(0).toString()
+      }
+      else {
+        sinceDateTime
+      }
     }
 
     val query = s"select time, avg_value from aggregated_data where project_id = $projectId and instance_id = $instanceId and parameter_id = $parameterId and time_period = '$timePeriod' and time >= '$timeSince'"

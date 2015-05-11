@@ -1,6 +1,9 @@
 package controllers
 
+import java.text.SimpleDateFormat
+
 import model.Dao
+import org.joda.time.DateTime
 import play.api.libs.json.Json.obj
 import play.api.mvc.{Action, _}
 import play.api.libs.json._
@@ -29,11 +32,20 @@ class Application(dao: Dao) extends Controller {
   }
 
 
-  def getData(instanceId: Int, parameterId: Int, timePeriod: String) = Action {
+  def getData(instanceId: Int, parameterId: Int, timePeriod: String, sinceTime: String, untilTime: String) = Action {
+    val (sinceDateTime,untilDateTime) = {
+      if (!sinceTime.equals("default") || !untilTime.equals("default")) {
+        val sinceDateTime = new DateTime(new SimpleDateFormat("yyyy-MM-dd_HH:mm").parse(sinceTime))
+        val untilDateTime = new DateTime(new SimpleDateFormat("yyyy-MM-dd_HH:mm").parse(untilTime))
+        (sinceDateTime,untilDateTime)
+      }
+      else (new DateTime(0),new DateTime(0))
+    }
+    println("sinceDateTime = " + sinceDateTime)
+    println("untilDateTime = " + untilDateTime)
 
-    val data = if(timePeriod.equals("1m")){dao.getLastRawData(instanceId, parameterId).toList} else { dao.getLastAggregatedData(instanceId, parameterId, timePeriod).toList}
+    val data = if(timePeriod.equals("1m")){dao.getLastRawData(instanceId, parameterId,sinceDateTime, untilDateTime).toList} else { dao.getLastAggregatedData(instanceId, parameterId, timePeriod,sinceDateTime,untilDateTime).toList}
 
-    val function: ((String, Double)) => JsObject = v => obj("date" -> v._1, "value" -> v._2) + ("date" -> JsString(v._1))
     val jsArray = JsArray(data.map(v => obj("date" -> v._1, "value" -> v._2) + ("date" -> JsString(v._1))))
     Logger.debug("sending json data = " + jsArray)
     Ok(jsArray)
@@ -53,9 +65,9 @@ class Application(dao: Dao) extends Controller {
     val instances = dao.getProjectInstances(projectId)
     val datas = instances.map(instance => {
       val data = if (timePeriod.equals("1m")) {
-        dao.getLastRawData(instance.instanceId, parameterId).toList
+        dao.getLastRawData(instance.instanceId, parameterId,new DateTime(0),new DateTime(0)).toList
       } else {
-        dao.getLastAggregatedData(instance.instanceId, parameterId, timePeriod).toList
+        dao.getLastAggregatedData(instance.instanceId, parameterId, timePeriod,new DateTime(0),new DateTime(0)).toList
       }
       data.map(e=> (e._1,(instance.name,e._2)))
     })

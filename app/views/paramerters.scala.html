@@ -7,7 +7,7 @@
     </h1>
     <div id="accordion">
         @for(parameter <- parameters){
-            <h3 onclick="getDataAjax(timeperiod,@instance.instanceId,@parameter.parameterId)"  style="color: #20b9ff; font-family: 'Open Sans Condensed', sans-serif; font-size: large; margin-left: 2%">@parameter.name</h3>
+            <h3 onclick="showContent(timeperiod,@instance.instanceId,@parameter.parameterId)"  style="color: #20b9ff; font-family: 'Open Sans Condensed', sans-serif; font-size: large; margin-left: 2%">@parameter.name</h3>
             <div >
                 <div style="margin-left: 5%">
                     <a style="float:left;color: #20b9ff; font-family: 'Open Sans Condensed', sans-serif; font-size: large; margin-left: 1%">Parameter @parameter.name in @parameter.unit</a>
@@ -19,6 +19,11 @@
                     <a onclick="getDataAjax('1d',@instance.instanceId,@parameter.parameterId)"  style="float: right; color: #20b9ff; font-family: 'Open Sans Condensed', sans-serif; font-size: large; margin-left: 1%">1d</a>
                     <a onclick="getDataAjax('1h',@instance.instanceId,@parameter.parameterId)"  style="float: right; color: #20b9ff; font-family: 'Open Sans Condensed', sans-serif; font-size: large; margin-left: 1%">1h</a>
                     <a onclick="getDataAjax('1m',@instance.instanceId,@parameter.parameterId)"  style="float: right; color: #20b9ff; font-family: 'Open Sans Condensed', sans-serif; font-size: large; margin-left: 1%">1m</a>
+
+                    <input id="dateTimePickerEnd@parameter.parameterId" type="text"  style="float: right; color: #20b9ff; font-family: 'Open Sans Condensed', sans-serif; font-size: large; margin-left: 1%; border: transparent">
+                    <a   style="float: right; color: #20b9ff; font-family: 'Open Sans Condensed', sans-serif; font-size: large; margin-left: 1%">Until </a>
+                    <input id="dateTimePickerStart@parameter.parameterId" type="text"  style="float: right; color: #20b9ff; font-family: 'Open Sans Condensed', sans-serif; font-size: large; margin-left: 1%; border: transparent">
+                    <a   style="float: right; color: #20b9ff; font-family: 'Open Sans Condensed', sans-serif; font-size: large; margin-left: 1%">Since </a>
 
 
 
