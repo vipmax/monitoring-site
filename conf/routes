@@ -4,8 +4,8 @@
 
 # Home page
 GET        /                         @controllers.Application.index()
-GET        /getData                  @controllers.Application.getData(instanceId: Int, parameterId: Int, timePeriod: String, sinceTime: String, untilTime: String)
-GET        /getProjectData           @controllers.Application.getProjectData(projectId: Int, parameterId: Int, timePeriod: String)
+GET        /getData                  @controllers.Application.getData(instanceId: Int, parameterId: Int, timePeriod: String, sinceTime: String, untilTime: String, valueType: String)
+GET        /getProjectData           @controllers.Application.getProjectData(projectId: Int, parameterId: Int, timePeriod: String, sinceTime: String, untilTime: String, valueType: String)
 GET        /getParameters            @controllers.Application.getParameters(instanceId: Int)
 GET        /getProjectParameters     @controllers.Application.getProjectParameters(projectId: Int)
 

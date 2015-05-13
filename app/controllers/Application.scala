@@ -13,8 +13,6 @@ class Application(dao: Dao) extends Controller {
 
 
   def index () = Action {
-
-
     val projectsAndInstances = dao.getProjectsAndInstances()
     Logger.debug("projects and instances = " + projectsAndInstances)
 
@@ -32,21 +30,16 @@ class Application(dao: Dao) extends Controller {
   }
 
 
-  def getData(instanceId: Int, parameterId: Int, timePeriod: String, sinceTime: String, untilTime: String) = Action {
-    val (sinceDateTime,untilDateTime) = {
-      if (!sinceTime.equals("default") || !untilTime.equals("default")) {
-        val sinceDateTime = new DateTime(new SimpleDateFormat("yyyy-MM-dd_HH:mm").parse(sinceTime))
-        val untilDateTime = new DateTime(new SimpleDateFormat("yyyy-MM-dd_HH:mm").parse(untilTime))
-        (sinceDateTime,untilDateTime)
-      }
-      else (new DateTime(0),new DateTime(0))
-    }
+  def getData(instanceId: Int, parameterId: Int, timePeriod: String, sinceTime: String, untilTime: String, valueType: String) = Action {
+
+    val sinceDateTime = if (!sinceTime.equals("default")) new DateTime(new SimpleDateFormat("yyyy-MM-dd_HH:mm").parse(sinceTime)) else new DateTime(0)
+    val untilDateTime = if (!untilTime.equals("default")) new DateTime(new SimpleDateFormat("yyyy-MM-dd_HH:mm").parse(untilTime)) else new DateTime()
     println("sinceDateTime = " + sinceDateTime)
     println("untilDateTime = " + untilDateTime)
 
-    val data = if(timePeriod.equals("1m")){dao.getLastRawData(instanceId, parameterId,sinceDateTime, untilDateTime).toList} else { dao.getLastAggregatedData(instanceId, parameterId, timePeriod,sinceDateTime,untilDateTime).toList}
+    val data = if(timePeriod.equals("1m")){dao.getLastRawData(instanceId, parameterId,sinceDateTime, untilDateTime).toList} else { dao.getLastAggregatedData(instanceId, parameterId, timePeriod,sinceDateTime,untilDateTime,valueType).toList}
 
-    val jsArray = JsArray(data.map(v => obj("date" -> v._1, "value" -> v._2) + ("date" -> JsString(v._1))))
+    val jsArray = JsArray(data.map(v => obj("date" -> v._1, "value" -> v._2)))
     Logger.debug("sending json data = " + jsArray)
     Ok(jsArray)
   }
@@ -59,15 +52,19 @@ class Application(dao: Dao) extends Controller {
     Ok(views.html.projectParameters(dao.getProject(projectId),projectInstances.map(_.name),parameters))
   }
 
-  def getProjectData(projectId: Int, parameterId: Int, timePeriod: String) = Action {
-    val function: ((String, Double)) => JsObject = v => obj("date" -> JsString(v._1), "value" -> JsNumber(v._2))
+  def getProjectData(projectId: Int, parameterId: Int, timePeriod: String, sinceTime: String, untilTime: String, valueType: String) = Action {
+
+    val sinceDateTime = if (!sinceTime.equals("default")) new DateTime(new SimpleDateFormat("yyyy-MM-dd_HH:mm").parse(sinceTime)) else new DateTime(0)
+    val untilDateTime = if (!untilTime.equals("default")) new DateTime(new SimpleDateFormat("yyyy-MM-dd_HH:mm").parse(untilTime)) else new DateTime()
+    println("sinceDateTime = " + sinceDateTime)
+    println("untilDateTime = " + untilDateTime)
 
     val instances = dao.getProjectInstances(projectId)
     val datas = instances.map(instance => {
       val data = if (timePeriod.equals("1m")) {
-        dao.getLastRawData(instance.instanceId, parameterId,new DateTime(0),new DateTime(0)).toList
+        dao.getLastRawData(instance.instanceId, parameterId,sinceDateTime,untilDateTime).toList
       } else {
-        dao.getLastAggregatedData(instance.instanceId, parameterId, timePeriod,new DateTime(0),new DateTime(0)).toList
+        dao.getLastAggregatedData(instance.instanceId, parameterId, timePeriod,sinceDateTime,untilDateTime,valueType).toList
       }
       data.map(e=> (e._1,(instance.name,e._2)))
     })

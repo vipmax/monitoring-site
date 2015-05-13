@@ -7,18 +7,29 @@
     </h1>
     <div id="accordion">
     @for(parameter <- parameters){
-        <h3 onclick="getProjectDataAjax(timeperiod,@project.projectId,@instances.mkString("['","','","']"),@parameter.parameterId)"  style="color: #20b9ff; font-family: 'Open Sans Condensed', sans-serif; font-size: large; margin-left: 2%">@parameter.name</h3>
+        <h3 onclick="showProjectContent(currentTimePeriod,@project.projectId,@instances.mkString("['","','","']"),@parameter.parameterId)"  style="color: #20b9ff; font-family: 'Open Sans Condensed', sans-serif; font-size: large; margin-left: 2%">@parameter.name</h3>
         <div >
             <div style="margin-left: 5%">
                 <a style="float:left;color: #20b9ff; font-family: 'Open Sans Condensed', sans-serif; font-size: large; margin-left: 1%">Parameter @parameter.name in @parameter.unit</a>
 
-                <a onclick="getProjectDataAjax(timeperiod,@project.projectId,@instances.mkString("['","','","']"),@parameter.parameterId)"  style="float:right;color: #20b9ff; font-family: 'Open Sans Condensed', sans-serif; font-size: large; margin-left: 1%">Update</a>
+                <a onclick="getProjectDataAjax(currentTimePeriod,@project.projectId,@instances.mkString("['","','","']"),@parameter.parameterId)"  style="float:right;color: #20b9ff; font-family: 'Open Sans Condensed', sans-serif; font-size: large; margin-left: 1%">Update</a>
                 <a onclick="getProjectDataAjax('1Y',@project.projectId,@instances.mkString("['","','","']"),@parameter.parameterId)"  style="float: right; color: #20b9ff; font-family: 'Open Sans Condensed', sans-serif; font-size: large; margin-left: 1%">1Y</a>
                 <a onclick="getProjectDataAjax('1M',@project.projectId,@instances.mkString("['","','","']"),@parameter.parameterId)"  style="float: right; color: #20b9ff; font-family: 'Open Sans Condensed', sans-serif; font-size: large; margin-left: 1%">1M</a>
                 <a onclick="getProjectDataAjax('1w',@project.projectId,@instances.mkString("['","','","']"),@parameter.parameterId)"  style="float: right; color: #20b9ff; font-family: 'Open Sans Condensed', sans-serif; font-size: large; margin-left: 1%">1w</a>
                 <a onclick="getProjectDataAjax('1d',@project.projectId,@instances.mkString("['","','","']"),@parameter.parameterId)"  style="float: right; color: #20b9ff; font-family: 'Open Sans Condensed', sans-serif; font-size: large; margin-left: 1%">1d</a>
                 <a onclick="getProjectDataAjax('1h',@project.projectId,@instances.mkString("['","','","']"),@parameter.parameterId)"  style="float: right; color: #20b9ff; font-family: 'Open Sans Condensed', sans-serif; font-size: large; margin-left: 1%">1h</a>
                 <a onclick="getProjectDataAjax('1m',@project.projectId,@instances.mkString("['","','","']"),@parameter.parameterId)"  style="float: right; color: #20b9ff; font-family: 'Open Sans Condensed', sans-serif; font-size: large; margin-left: 1%">1m</a>
+
+
+                <input id="dateTimePickerEnd@parameter.parameterId" type="text"  style="float: right; color: #20b9ff; font-family: 'Open Sans Condensed', sans-serif; font-size: large; margin-left: 1%; border: transparent">
+                <a   style="float: right; color: #20b9ff; font-family: 'Open Sans Condensed', sans-serif; font-size: large; margin-left: 1%">Until </a>
+                <input id="dateTimePickerStart@parameter.parameterId" type="text"  style="float: right; color: #20b9ff; font-family: 'Open Sans Condensed', sans-serif; font-size: large; margin-left: 1%; border: transparent">
+                <a   style="float: right; color: #20b9ff; font-family: 'Open Sans Condensed', sans-serif; font-size: large; margin-left: 1%">Since </a>
+
+                <a onclick="setValueType('min')" style="float: right; color: #20b9ff; font-family: 'Open Sans Condensed', sans-serif; font-size: large; margin-right: 2%">min</a>
+                <a onclick="setValueType('max')"  style="float: right; color: #20b9ff; font-family: 'Open Sans Condensed', sans-serif; font-size: large;margin-right: 1%">max</a>
+                <a onclick="setValueType('avg')"  style="float: right; color: #20b9ff; font-family: 'Open Sans Condensed', sans-serif; font-size: large;margin-right: 1%">avg</a>
+                <a onclick="setValueType('sum')"  style="float: right; color: #20b9ff; font-family: 'Open Sans Condensed', sans-serif; font-size: large;margin-right: 1%">sum</a>
 
 
 

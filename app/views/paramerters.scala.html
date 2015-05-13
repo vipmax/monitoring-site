@@ -7,12 +7,12 @@
     </h1>
     <div id="accordion">
         @for(parameter <- parameters){
-            <h3 onclick="showContent(timeperiod,@instance.instanceId,@parameter.parameterId)"  style="color: #20b9ff; font-family: 'Open Sans Condensed', sans-serif; font-size: large; margin-left: 2%">@parameter.name</h3>
+            <h3 onclick="showContent(currentTimePeriod,@instance.instanceId,@parameter.parameterId)"  style="color: #20b9ff; font-family: 'Open Sans Condensed', sans-serif; font-size: large; margin-left: 2%">@parameter.name</h3>
             <div >
                 <div style="margin-left: 5%">
                     <a style="float:left;color: #20b9ff; font-family: 'Open Sans Condensed', sans-serif; font-size: large; margin-left: 1%">Parameter @parameter.name in @parameter.unit</a>
 
-                    <a onclick="getDataAjax(timeperiod,@instance.instanceId,@parameter.parameterId)"  style="float:right;color: #20b9ff; font-family: 'Open Sans Condensed', sans-serif; font-size: large; margin-left: 1%">Update</a>
+                    <a onclick="getDataAjax(currentTimePeriod,@instance.instanceId,@parameter.parameterId)"  style="float:right;color: #20b9ff; font-family: 'Open Sans Condensed', sans-serif; font-size: large; margin-left: 1%">Update</a>
                     <a onclick="getDataAjax('1Y',@instance.instanceId,@parameter.parameterId)"  style="float: right; color: #20b9ff; font-family: 'Open Sans Condensed', sans-serif; font-size: large; margin-left: 1%">1Y</a>
                     <a onclick="getDataAjax('1M',@instance.instanceId,@parameter.parameterId)"  style="float: right; color: #20b9ff; font-family: 'Open Sans Condensed', sans-serif; font-size: large; margin-left: 1%">1M</a>
                     <a onclick="getDataAjax('1w',@instance.instanceId,@parameter.parameterId)"  style="float: right; color: #20b9ff; font-family: 'Open Sans Condensed', sans-serif; font-size: large; margin-left: 1%">1w</a>
@@ -25,6 +25,10 @@
                     <input id="dateTimePickerStart@parameter.parameterId" type="text"  style="float: right; color: #20b9ff; font-family: 'Open Sans Condensed', sans-serif; font-size: large; margin-left: 1%; border: transparent">
                     <a   style="float: right; color: #20b9ff; font-family: 'Open Sans Condensed', sans-serif; font-size: large; margin-left: 1%">Since </a>
 
+                    <a onclick="setValueType('min')" style="float: right; color: #20b9ff; font-family: 'Open Sans Condensed', sans-serif; font-size: large; margin-left: 1%">min</a>
+                    <a onclick="setValueType('max')"  style="float: right; color: #20b9ff; font-family: 'Open Sans Condensed', sans-serif; font-size: large; margin-left: 1%">max</a>
+                    <a onclick="setValueType('avg')"  style="float: right; color: #20b9ff; font-family: 'Open Sans Condensed', sans-serif; font-size: large; margin-left: 1%">avg</a>
+                    <a onclick="setValueType('sum')"  style="float: right; color: #20b9ff; font-family: 'Open Sans Condensed', sans-serif; font-size: large; margin-left: 1%">sum</a>
 
 
                 </div>

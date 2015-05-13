@@ -26,332 +26,357 @@
         <link rel="stylesheet" type="text/css" href="@routes.Assets.at("css/main.css")">
 
         <script>
-                        var sinceTime = "default";
-                        var untilTime = "default";
-                        function initDateTimePickers(parameterId){
-                            var s = '#dateTimePickerStart'+ parameterId;
-                            var e = '#dateTimePickerEnd'+ parameterId;
+            var currentProject;
+            var currentInstance;
+            var currentParameter;
+            var currentInstances;
+            var currentSinceTime = "default";
+            var currentUntilTime = "default";
+            var currentValueType = 'avg'
+            var currentTimePeriod = '1m'
+            var currentScope = "instance"
 
-                                jQuery(s).datetimepicker({
+            function setValueType(type){
+                currentValueType = type;
+                if(currentTimePeriod == "1m"){}
+                else {
+                    if(currentScope == "instance" )
+                        getDataAjax ( currentTimePeriod, currentInstance, currentParameter ) ;
+                    if(currentScope == "project" )
+                        getProjectDataAjax ( currentTimePeriod, currentProject, currentInstances, currentParameter )
+                }
+            }
+
+            function initDateTimePickers(parameterId){
+                var s = '#dateTimePickerStart'+ parameterId;
+                var e = '#dateTimePickerEnd'+ parameterId;
+
+                    jQuery(s).datetimepicker({
                                         format:'Y-m-d H:i',
-                                        onShow:function( ct ){
-                                                   this.setOptions({
-                                                         maxDate:jQuery(e).val()?jQuery(e).val():false
-                                                })
-                                        },
-                                        onChangeDateTime:function(date){ sinceTime = date.dateFormat('Y-m-d_H:i' ); console.log("sinceTime = " + sinceTime);  }
-                                });
-                                jQuery(e).datetimepicker({
-                                    startDate: new Date( ).toString(),
-                                    format:'Y-m-d H:i',
-                                    onChangeDateTime:function(date){ untilTime = date.dateFormat('Y-m-d_H:i'); console.log("untilTime = " + untilTime);  }
+                            onShow:function( ct ){
+                                       this.setOptions({
+                                             maxDate:jQuery(e).val()?jQuery(e).val():false
+                                    })
+                            },
+                            onChangeDateTime:function(date){ currentSinceTime = date.dateFormat('Y-m-d_H:i' ); console.log("currentSinceTime = " + currentSinceTime);  }
+                    });
+                    jQuery(e).datetimepicker({
+                        startDate: new Date( ).toString(),
+                        format:'Y-m-d H:i',
+                        onChangeDateTime:function(date){ currentUntilTime = date.dateFormat('Y-m-d_H:i'); console.log("currentUntilTime = " + currentUntilTime);  }
 
-                                });
-                        }
-                        function facechange (objName) {
-                            if ( $(objName).css('display') == 'none' ) {
-                                $(objName).animate({height: 'show'}, 300);
-                            } else {
-                                $(objName).animate({height: 'hide'}, 300);
-                            }
-                        }
+                    });
+            }
 
-                        var timeperiod = '1m'
-                        function switchPeriod(period){
-                            timeperiod = period
-                            console.log("timeperiod " + timeperiod)
-                        }
+            function setTimePeriod(period){
+                currentTimePeriod = period
+                console.log("currentTimePeriod " + currentTimePeriod)
+            }
 
-                        function removeOld(){
-                           $("#otherContent").remove();
-                        }
+            function removeContent(){
+               $("#otherContent").remove();
+            }
 
-                        function getProjectInstancesParameters(projectId){
-                            console.log("inside getProjectInstancesParameters func " + projectId);
-                        $.ajax({
-                            type : 'GET',
-                            url : "/getProjectParameters?projectId=" + projectId,
-                            success : function(data) {
-                                removeOld();
-                                var div = document.createElement('div');
-                                div.type = 'text';
-                                div.innerHTML = data;
-                                div.display = 'none';
-                                document.getElementById("parameterContainer").appendChild(div);
-                                $(function() {
-                                    $("#accordion" ).accordion({
-                                        heightStyle: "content",
-                                        collapsible: true,
-                                        animate: 200,
-                                        active: false
-                                    });
-                                });
-
-                        },
-                        error : function(data) {   }
+            function getProjectInstancesParameters(projectId){
+                currentScope = "project"
+                console.log("inside getProjectInstancesParameters func " + projectId);
+            $.ajax({
+                type : 'GET',
+                url : "/getProjectParameters?projectId=" + projectId,
+                success : function(data) {
+                    removeContent();
+                    var div = document.createElement('div');
+                    div.type = 'text';
+                    div.innerHTML = data;
+                    div.display = 'none';
+                    document.getElementById("parameterContainer").appendChild(div);
+                    $(function() {
+                        $("#accordion" ).accordion({
+                            heightStyle: "content",
+                            collapsible: true,
+                            animate: 200,
+                            active: false
                         });
+                    });
 
-                        }
-                        function getParametersAjax(instanceId){
-                             console.log("inside getParametersAjax func " + instanceId);
+            },
+            error : function(data) {   }
+            });
 
-                             $.ajax({
-                                 type : 'GET',
-                                 url : "/getParameters?instanceId=" + instanceId,
-                                 success : function(data) {
-                                     removeOld();
-                                     var div = document.createElement('div');
-                                     div.type = 'text';
-                                     div.innerHTML = data;
-                                     div.display = 'none';
-                                     document.getElementById("parameterContainer").appendChild(div);
-                                     $(function() {
-                                        $("#accordion" ).accordion({
-                                          heightStyle: "content",
-                                          collapsible: true,
-                                          animate: 200,
-                                          active: false
-                                        });
-                                     });
+            }
 
+            function getParametersAjax(instanceId){
+                 currentScope = "instance"
+                 console.log("inside getParametersAjax func " + instanceId);
 
-
-
-                                 },
-                                 error : function(data) {   }
-                             });
-                        }
-
-                        function showContent(period,instanceId,parameterId) {
-                            initDateTimePickers(parameterId);
-                            getDataAjax(period,instanceId,parameterId);
-                        }
-                        function getDataAjax(period,instanceId,parameterId){
-                             console.log("inside getDataAjax func instanceId= " + instanceId+ "  parameterId= "+ parameterId +" timePeriod=" + timeperiod +" sinceTime=" + sinceTime +" untilTime=" + untilTime);
-                             switchPeriod(period)
-
-
-
-                        $.ajax({
-                                 type : 'GET',
-                                 url : "/getData?instanceId="+instanceId+"&parameterId=" + parameterId+"&timePeriod=" + timeperiod+"&sinceTime=" + sinceTime+"&untilTime=" + untilTime,
-                                 success : function(data) {
-
-
-                                     var chartName = "chart"+parameterId;
-                                     var minPeriod = "mm";
-
-                                     if(timeperiod == '1m'){
-                                        console.log("need render 1m chart ");
-                                        minPeriod = "mm"
-
-                                     }
-
-                                     if(timeperiod == '1h'){
-                                        console.log("need render 1h chart ");
-                                        minPeriod = "hh"
-                                     }
-                                     if(timeperiod == '1d'){
-                                        console.log("need render 1d chart ");
-                                        minPeriod = "DD"
-                                     }
-
-                                     if(timeperiod == '1w'){
-                                        console.log("need render 1w chart ");
-                                        minPeriod = "WW"
-                                     }
-
-                                     if(timeperiod == '1M'){
-                                        console.log("need render 1M chart ");
-                                        minPeriod = "MM"
-                                     }
-                                     if(timeperiod == '1Y'){
-                                        console.log("need render 1Y chart ");
-                                        minPeriod = "YYYY"
-                                     }
-
-
-
-                                     var chart = AmCharts.makeChart(chartName, {
-                                                         "type": "serial",
-                                                         "pathToImages": "http://cdn.amcharts.com/lib/3/images/",
-                                                         "categoryField": "date",
-                                                         "dataDateFormat": "YYYY-MM-DD HH:NN",
-                                                         "maxSelectedSeries": 0,
-                                                         "mouseWheelScrollEnabled": true,
-                                                         "zoomOutOnDataUpdate": false,
-                                                         "theme": "light",
-                                                         "categoryAxis": {
-                                                             "minPeriod":  minPeriod,
-                                                             "parseDates": true
-                                                         },
-                                                         "chartCursor": {
-                                                             "animationDuration": 0,
-                                                             "categoryBalloonDateFormat": "YYYY-MM-DD HH:NN"
-                                                         },
-                                                         "chartScrollbar": {
-                                                             "autoGridCount": true,
-                                                             "backgroundAlpha": 0.21,
-                                                             "dragIconHeight": 38,
-                                                             "graphType": "line",
-                                                             "gridCount": 1,
-                                                             "maximum": 2,
-                                                             "scrollbarHeight": 54,
-                                                             "scrollDuration": 6
-                                                         },
-                                                         "trendLines": [],
-                                                         "graphs": [
-                                                             {
-                                                                 "minHorizontalGap" : 10,
-                                                                 "bullet": "round",
-                                                                 "hideBulletsCount": 50,
-                                                                 "gapPeriod": 10,
-                                                                 "id": "AmGraph-1",
-                                                                 "title": "graph 1",
-                                                                 "type": "column",
-                                                                 "valueAxis": "Not set",
-                                                                 "valueField": "value"
-                                                             }
-                                                         ],
-
-
-                                                         "export": {
-                                                             "enabled": true,
-                                                             "libs": {
-                                                                 "path": "http://www.amcharts.com/lib/3/plugins/export/libs/"
-                                                             }
-
-                                                         },
-                                                         "dataProvider": data
-
-                                                     });
-                                         chart.connect = false;
-                                         chart.addListener("rendered", zoomChart);
-                                         zoomChart();
-                                         function zoomChart() {
-                                             chart.zoomToIndexes(chart.dataProvider.length - 40, chart.dataProvider.length - 1);
-                                         }
-
-
-
-                                 },
-                                 error : function(data) {   }
-                             });
-                        }
-                        function getProjectDataAjax(period,projectId,instances,parameterId){
-                            console.log("inside getProjectDataAjax func projectId= " + projectId+ "instances = "+instances +  " parameterId= "+ parameterId +" timePeriod=" + timeperiod);
-                            switchPeriod(period);
-
-                            $.ajax({
-                                type : 'GET',
-                                url : "/getProjectData?projectId="+projectId+"&parameterId=" + parameterId+"&timePeriod=" + timeperiod,
-                            success : function(data) {
-                                console.log("instances = "+instances);
-                                var chartName = "projectChart" + parameterId ;
-                                var minPeriod = "mm" ;
-
-                                if ( timeperiod == '1m' ) {
-                                console.log ( "need render 1m chart " ) ;
-                                minPeriod = "mm"
-                                }
-
-                                if ( timeperiod == '1h' ) {
-                                console.log ( "need render 1h chart " ) ;
-                                minPeriod = "hh"
-                                }
-                                if ( timeperiod == '1d' ) {
-                                console.log ( "need render 1d chart " ) ;
-                                minPeriod = "DD"
-                                }
-
-                                if ( timeperiod == '1w' ) {
-                                console.log ( "need render 1w chart " ) ;
-                                minPeriod = "WW"
-                                }
-
-                                if ( timeperiod == '1M' ) {
-                                console.log ( "need render 1M chart " ) ;
-                                minPeriod = "MM"
-                                }
-                                if ( timeperiod == '1Y' ) {
-                                console.log ( "need render 1Y chart " ) ;
-                                minPeriod = "YYYY"
-                                }
+                 $.ajax({
+                     type : 'GET',
+                     url : "/getParameters?instanceId=" + instanceId,
+                     success : function(data) {
+                         removeContent();
+                         var div = document.createElement('div');
+                         div.type = 'text';
+                         div.innerHTML = data;
+                         div.display = 'none';
+                         document.getElementById("parameterContainer").appendChild(div);
+                         $(function() {
+                            $("#accordion" ).accordion({
+                              heightStyle: "content",
+                              collapsible: true,
+                              animate: 200,
+                              active: false
+                            });
+                         });
 
 
 
 
+                     },
+                     error : function(data) {   }
+                 });
+            }
 
-                                var chart = AmCharts.makeChart ( chartName, {
-                                "type" : "serial",
-                                "pathToImages" : "http://cdn.amcharts.com/lib/3/images/",
-                                "categoryField" : "date",
-                                "dataDateFormat" : "YYYY-MM-DD HH:NN",
-                                "maxSelectedSeries" : 0,
-                                "mouseWheelScrollEnabled" : true,
-                                "zoomOutOnDataUpdate" : false,
-                                "theme" : "light",
-                                "categoryAxis" : {
-                                "minPeriod" : minPeriod,
-                                "parseDates" : true
-                                },
-                                "chartCursor" : {
-                                "animationDuration" : 0,
-                                "categoryBalloonDateFormat" : "YYYY-MM-DD HH:NN"
-                                },
-                                "chartScrollbar" : {
-                                "autoGridCount" : true,
-                                "backgroundAlpha" : 0.21,
-                                "dragIconHeight" : 38,
-                                "graphType" : "line",
-                                "gridCount" : 1,
-                                "maximum" : 2,
-                                "scrollbarHeight" : 54,
-                                "scrollDuration" : 6
-                                },
-                                "legend": {
-                                "useGraphSettings": true
-                                },
+            function showContent(period,instanceId,parameterId) {
+                currentInstance = instanceId;
+                currentParameter = parameterId;
+                initDateTimePickers(parameterId);
+                getDataAjax(period,instanceId,parameterId);
+            }
+
+            function showProjectContent(currentTimePeriod,projectId,instances,parameterId){
+                currentProject = projectId;
+                currentParameter = parameterId;
+                currentInstances = instances;
+                initDateTimePickers(parameterId)
+                getProjectDataAjax(currentTimePeriod,projectId,instances,parameterId)
+            }
+
+            function getDataAjax(period,instanceId,parameterId){
+                 console.log("inside getDataAjax func instanceId= " + instanceId+ "  parameterId= "+ parameterId +" timePeriod=" + currentTimePeriod +" currentSinceTime=" + currentSinceTime +" currentUntilTime=" + currentUntilTime);
+                 setTimePeriod(period)
 
 
-                                "export" : {
-                                "enabled" : true,
-                                "libs" : {
-                                "path" : "http://www.amcharts.com/lib/3/plugins/export/libs/"
-                                }
 
-                                },
-                                "dataProvider" : data
+            $.ajax({
+                     type : 'GET',
+                     url : "/getData?instanceId="+instanceId+"&parameterId=" + parameterId+"&timePeriod=" + currentTimePeriod+"&sinceTime=" + currentSinceTime+"&untilTime=" + currentUntilTime +"&valueType=" + currentValueType,
+                     success : function(data) {
 
-                                } ) ;
+                         var chartName = "chart"+parameterId;
+                         var minPeriod = "mm";
+
+                         if(currentTimePeriod == '1m'){
+                            console.log("need render 1m chart ");
+                            minPeriod = "mm"
+
+                         }
+
+                         if(currentTimePeriod == '1h'){
+                            console.log("need render 1h chart ");
+                            minPeriod = "hh"
+                         }
+                         if(currentTimePeriod == '1d'){
+                            console.log("need render 1d chart ");
+                            minPeriod = "DD"
+                         }
+
+                         if(currentTimePeriod == '1w'){
+                            console.log("need render 1w chart ");
+                            minPeriod = "WW"
+                         }
+
+                         if(currentTimePeriod == '1M'){
+                            console.log("need render 1M chart ");
+                            minPeriod = "MM"
+                         }
+                         if(currentTimePeriod == '1Y'){
+                            console.log("need render 1Y chart ");
+                            minPeriod = "YYYY"
+                         }
 
 
-                                for ( var i = 0 ; i < instances.length ; i++ ) {
-                                    var instance = instances[i]
-                                    var g = new AmCharts.AmGraph ();
-                                    g.bullet = "round" ;
-                                    g.id = "AmGraph-" +instance;
-                                    g.title = instance ;
-                                    g.valueField = instance ;
-                                    g.title = instance;
-                                    g.type = "column" ;
-                                    chart.addGraph (g);
-                                }
 
-                                chart.connect = false;
-                                chart.addListener("rendered", zoomChart);
-                                zoomChart();
-                                function zoomChart() {
-                                chart.zoomToIndexes(chart.dataProvider.length - 40, chart.dataProvider.length - 1);
-                                }
+                         var chart = AmCharts.makeChart(chartName, {
+                                             "type": "serial",
+                                             "pathToImages": "http://cdn.amcharts.com/lib/3/images/",
+                                             "categoryField": "date",
+                                             "dataDateFormat": "YYYY-MM-DD HH:NN",
+                                             "maxSelectedSeries": 0,
+                                             "mouseWheelScrollEnabled": true,
+                                             "zoomOutOnDataUpdate": false,
+                                             "theme": "light",
+                                             "categoryAxis": {
+                                                 "minPeriod":  minPeriod,
+                                                 "parseDates": true
+                                             },
+                                             "chartCursor": {
+                                                 "animationDuration": 0,
+                                                 "categoryBalloonDateFormat": "YYYY-MM-DD HH:NN"
+                                             },
+                                             "chartScrollbar": {
+                                                 "autoGridCount": true,
+                                                 "backgroundAlpha": 0.21,
+                                                 "dragIconHeight": 38,
+                                                 "graphType": "line",
+                                                 "gridCount": 1,
+                                                 "maximum": 2,
+                                                 "scrollbarHeight": 54,
+                                                 "scrollDuration": 6
+                                             },
+                                             "trendLines": [],
+                                             "graphs": [
+                                                 {
+                                                     "minHorizontalGap" : 10,
+                                                     "bullet": "round",
+                                                     "hideBulletsCount": 50,
+                                                     "gapPeriod": 10,
+                                                     "id": "AmGraph-1",
+                                                     "title": "graph 1",
+                                                     "type": "column",
+                                                     "valueAxis": "Not set",
+                                                     "valueField": "value"
+                                                 }
+                                             ],
 
-                                },
-                                error : function(data) { }
-                                });
-                        }
+
+                                             "export": {
+                                                 "enabled": true,
+                                                 "libs": {
+                                                     "path": "http://www.amcharts.com/lib/3/plugins/export/libs/"
+                                                 }
+
+                                             },
+                                             "dataProvider": data
+
+                                         });
+                             chart.connect = false;
+                             chart.addListener("rendered", zoomChart);
+                             zoomChart();
+                             function zoomChart() {
+                                 chart.zoomToIndexes(chart.dataProvider.length - 40, chart.dataProvider.length - 1);
+                             }
 
 
-                    </script>
+
+                     },
+                     error : function(data) { alert("something wrong")  }
+                 });
+            }
+
+            function getProjectDataAjax(period,projectId,instances,parameterId){
+                console.log("inside getProjectDataAjax func projectId= " + projectId+ "instances = "+instances +  " parameterId= "+ parameterId +" timePeriod=" + currentTimePeriod  +" currentSinceTime=" + currentSinceTime +" currentUntilTime=" + currentUntilTime);
+                setTimePeriod(period);
+
+                $.ajax({
+                    type : 'GET',
+                    url : "/getProjectData?projectId="+projectId+"&parameterId=" + parameterId+"&timePeriod=" + currentTimePeriod +"&sinceTime=" + currentSinceTime+"&untilTime=" + currentUntilTime+"&valueType=" + currentValueType,
+                success : function(data) {
+                    console.log("instances = "+instances);
+                    var chartName = "projectChart" + parameterId ;
+                    var minPeriod = "mm" ;
+
+                    if ( currentTimePeriod == '1m' ) {
+                    console.log ( "need render 1m chart " ) ;
+                    minPeriod = "mm"
+                    }
+
+                    if ( currentTimePeriod == '1h' ) {
+                    console.log ( "need render 1h chart " ) ;
+                    minPeriod = "hh"
+                    }
+                    if ( currentTimePeriod == '1d' ) {
+                    console.log ( "need render 1d chart " ) ;
+                    minPeriod = "DD"
+                    }
+
+                    if ( currentTimePeriod == '1w' ) {
+                    console.log ( "need render 1w chart " ) ;
+                    minPeriod = "WW"
+                    }
+
+                    if ( currentTimePeriod == '1M' ) {
+                    console.log ( "need render 1M chart " ) ;
+                    minPeriod = "MM"
+                    }
+                    if ( currentTimePeriod == '1Y' ) {
+                    console.log ( "need render 1Y chart " ) ;
+                    minPeriod = "YYYY"
+                    }
+
+
+
+
+
+                    var chart = AmCharts.makeChart ( chartName, {
+                    "type" : "serial",
+                    "pathToImages" : "http://cdn.amcharts.com/lib/3/images/",
+                    "categoryField" : "date",
+                    "dataDateFormat" : "YYYY-MM-DD HH:NN",
+                    "maxSelectedSeries" : 0,
+                    "mouseWheelScrollEnabled" : true,
+                    "zoomOutOnDataUpdate" : false,
+                    "theme" : "light",
+                    "categoryAxis" : {
+                    "minPeriod" : minPeriod,
+                    "parseDates" : true
+                    },
+                    "chartCursor" : {
+                    "animationDuration" : 0,
+                    "categoryBalloonDateFormat" : "YYYY-MM-DD HH:NN"
+                    },
+                    "chartScrollbar" : {
+                    "autoGridCount" : true,
+                    "backgroundAlpha" : 0.21,
+                    "dragIconHeight" : 38,
+                    "graphType" : "line",
+                    "gridCount" : 1,
+                    "maximum" : 2,
+                    "scrollbarHeight" : 54,
+                    "scrollDuration" : 6
+                    },
+                    "legend": {
+                    "useGraphSettings": true
+                    },
+
+
+                    "export" : {
+                    "enabled" : true,
+                    "libs" : {
+                    "path" : "http://www.amcharts.com/lib/3/plugins/export/libs/"
+                    }
+
+                    },
+                    "dataProvider" : data
+
+                    } ) ;
+
+
+                    for ( var i = 0 ; i < instances.length ; i++ ) {
+                        var instance = instances[i]
+                        var g = new AmCharts.AmGraph ();
+                        g.bullet = "round" ;
+                        g.id = "AmGraph-" +instance;
+                        g.title = instance ;
+                        g.valueField = instance ;
+                        g.title = instance;
+                        g.type = "column" ;
+                        chart.addGraph (g);
+                    }
+
+                    chart.connect = false;
+                    chart.addListener("rendered", zoomChart);
+                    zoomChart();
+                    function zoomChart() {
+                    chart.zoomToIndexes(chart.dataProvider.length - 40, chart.dataProvider.length - 1);
+                    }
+
+                    },
+                    error : function(data) { alert("something wrong") }
+                    });
+            }
+
+
+         </script>
 
 
 
