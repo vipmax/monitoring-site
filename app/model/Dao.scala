@@ -77,7 +77,7 @@ class Dao(node: String) {
 
     val lastRawData = session.execute(query).map(row => (new DateTime(row.getDate("time")).toString("yyyy-MM-dd HH:mm"), row.getDouble("value")))
 
-    lastRawData
+    lastRawData.toList.sortBy(_._1)
   }
 
 
@@ -106,8 +106,8 @@ class Dao(node: String) {
 
     val query = s"select time, ${valueType}_value from aggregated_data where project_id = $projectId and instance_id = $instanceId and parameter_id = $parameterId and time_period = '$timePeriod' and time >= '$timeSince' and time <= '$untilTime'"
     println("query = " + query)
-    val data = session.execute(query).map(row =>(new DateTime(row.getDate("time")).toString("yyyy-MM-dd HH:mm"),  row.getDouble(s"${valueType}_value"))).toList
-    data
+    val data = session.execute(query).map(row =>(new DateTime(row.getDate("time")).toString("yyyy-MM-dd HH:mm"),  row.getDouble(s"${valueType}_value")))
+    data.toList.sortBy(_._1)
   }
 
 
