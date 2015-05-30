@@ -2,9 +2,9 @@
 
 <div id="otherContent">
 
-    <h1 style="color: #20b9ff; font-family: 'Open Sans Condensed', sans-serif; font-size: inherit; font-weight: normal;margin-left: 4%">
+    <h2 style="color: #20b9ff; font-family: 'Open Sans Condensed', sans-serif; font-size: larger; font-weight: normal;margin-left: 4%">
         Instance @instance.name have @parameters.size parameters
-    </h1>
+    </h2>
     <div id="accordion">
         @for(parameter <- parameters){
             <h3 onclick="showContent(currentTimePeriod,@instance.instanceId,@parameter.parameterId)"  style="color: #20b9ff; font-family: 'Open Sans Condensed', sans-serif; font-size: large; margin-left: 2%">@parameter.name</h3>
