@@ -2,10 +2,7 @@
     background:transparent;
     border: none;
     cursor: all-scroll;
-
 }
-
-
 
 .ui-menu {
     width: 150px;
@@ -13,25 +10,17 @@
     margin-left: 1%;
     background-color: transparent;
     border-style: none;
-
 }
-
-
-
 
 nav {
     box-sizing: border-box;
     font-size: 150%;
-    /*moz-box-sizing: border-box;*/
-    /*webkit-box-sizing: border-box;*/
 }
 
 *{
     color : #20b9ff ;
     font-family: 'Open Sans Condensed', sans-serif;
-
 }
-
 
 nav {
     background: #fff;
@@ -48,28 +37,30 @@ nav ul {
     list-style: none;
     position: relative;
 }
-nav ul li {
 
+nav ul li {
     float: left;
     moz-transition: all .2s ease-in-out;
     transition: all .2s ease-in-out;
     webkit-transition: all .2s ease-in-out;
 }
+
 nav ul li:hover {
     background: rgba(0,0,0,.15);
 }
+
 nav ul li:hover > ul {
     display: block;
 }
-nav ul li {
 
+nav ul li {
     float: left;
     moz-transition: all .2s ease-in-out;
     transition: all .2s ease-in-out;
     webkit-transition: all .2s ease-in-out;
 }
-nav ul li a {
 
+nav ul li a {
     color: rgb( 32, 185, 255 );
     display: block;
     font-size: .9em;
@@ -78,8 +69,8 @@ nav ul li a {
     text-decoration: none;
     text-transform: uppercase;
 }
-nav ul ul {
 
+nav ul ul {
     background: #fff;
     border: 1px solid rgba(0,0,0,.1);
     box-shadow: -3px 3px 10px -2px rgba(0,0,0,.1);
@@ -87,24 +78,24 @@ nav ul ul {
     position: inherit;
     top: 100%;
 }
+
 nav ul ul li {
     float: none;
     position: relative;
 }
-nav ul ul li a {
 
+nav ul ul li a {
     border-bottom: 1px solid rgba(0,0,0,.05);
     padding: 15px 30px;
 }
+
 nav ul ul ul {
     left: 100%;
     position: relative;
     top: 0;
-
 }
 
 nav ul li ul{
     margin: auto;
     font-size: small;
-
 }

@@ -1,11 +1,5 @@
 package model
 
-/**
- * Created by vipmax on 4/29/15.
- */
-
-
-
 import akka.actor.ActorSystem
 import com.datastax.driver.core.Cluster
 import com.datastax.driver.core.querybuilder.QueryBuilder.select
@@ -15,12 +9,14 @@ import play.api.libs.json.{JsString, JsNumber, Json}
 import scala.collection.JavaConversions._
 import scala.concurrent.duration._
 
+/**
+ * Created by vipmax on 4/29/15.
+ */
 
 class Dao(node: String) {
 
-
-  val cluster = Cluster.builder().addContactPoint(node).build()
-  val session = cluster.connect("monitoring")
+  private val cluster = Cluster.builder().addContactPoint(node).build()
+  private val session = cluster.connect("monitoring")
 
   private var projects = getProjectsFromDb()
   private var instances = getInstancesFromDb()
@@ -113,7 +109,7 @@ class Dao(node: String) {
   def getProjectsFromDb()   = getRowsFromDb("projects").  map(r =>  Project(r.getInt("project_id"),    r.getString("name"), asScalaSet(r.getSet("instances",  classOf[Integer]).map(p=> p.intValue())).toSet)).toSet
   def getInstancesFromDb()  = getRowsFromDb("instances"). map(r => Instance(r.getInt("instance_id"),   r.getString("name"), asScalaSet(r.getSet("parameters", classOf[Integer]).map(p=> p.intValue())).toSet)).toSet
   def getParametersFromDb() = getRowsFromDb("parameters").map(r => Parameter(r.getInt("parameter_id"), r.getString("name"), r.getString("unit"),   r.getDouble("min_value"), r.getDouble("max_value"))).toSet
-  def getRowsFromDb(table:String) = session.execute(select().all().from(table))
+  def getRowsFromDb(table: String) = session.execute(select().all().from(table))
 
   def getInstanceParameters(instanceId: Int) = parameters.filter(p => getInstance(instanceId).parameters.contains(p.parameterId))
   def getProjectInstances(projectId: Int) = instances.filter(i =>  getProject(projectId).instances.contains(i.instanceId))
@@ -124,9 +120,6 @@ class Dao(node: String) {
 
 
 
-  def close() {
-    session.close
-    cluster.close
-  }
+  def close() { session.close; cluster.close }
 
 }

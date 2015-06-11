@@ -18,17 +18,12 @@ object Global extends GlobalSettings  {
     controller = new controllers.Application(dao)
   }
 
-  override def getControllerInstance[A](clazz: Class[A]): A = {
-    // as simple as possible, nothing else needed for now...
-    if(clazz == classOf[controllers.Application])
-      controller.asInstanceOf[A]
-    else
-      throw new IllegalArgumentException(s"Controller of class $clazz not yet supported")
-  }
+  override def getControllerInstance[A](clazz: Class[A]): A =
+    if(clazz == classOf[controllers.Application]) controller.asInstanceOf[A]
+    else throw new IllegalArgumentException(s"Controller of class $clazz not yet supported")
 
-  override def onStop(app: play.api.Application) {
-    dao.close
-  }
+
+  override def onStop(app: play.api.Application) { dao.close }
 
 
   override def onRouteRequest(request: RequestHeader) = {logRequest(request); super.onRouteRequest(request)}

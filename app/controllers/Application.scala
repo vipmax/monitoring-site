@@ -11,20 +11,15 @@ import play.api.Logger
 
 class Application(dao: Dao) extends Controller {
 
-
   def index () = Action {
     val projectsAndInstances = dao.getProjectsAndInstances()
     Ok(views.html.main("Monitoring", projectsAndInstances))
   }
 
-
-
-
-  def getParameters(instanceId: Int)= Action{
+  def getParameters(instanceId: Int) = Action {
     val instanceParameters = dao.getInstanceParameters(instanceId)
     Ok(views.html.paramerters(dao.getInstance(instanceId),instanceParameters))
   }
-
 
   def getData(instanceId: Int, parameterId: Int, timePeriod: String, sinceTime: String, untilTime: String, valueType: String) = Action {
 
@@ -49,11 +44,9 @@ class Application(dao: Dao) extends Controller {
 
     val sinceDateTime = if (!sinceTime.equals("default")) new DateTime(new SimpleDateFormat("yyyy-MM-dd_HH:mm").parse(sinceTime)) else new DateTime(0)
     val untilDateTime = if (!untilTime.equals("default")) new DateTime(new SimpleDateFormat("yyyy-MM-dd_HH:mm").parse(untilTime)) else new DateTime()
-    println("sinceDateTime = " + sinceDateTime)
-    println("untilDateTime = " + untilDateTime)
 
     val instances = dao.getProjectInstances(projectId)
-    val datas = instances.map(instance => {
+    val data = instances.map(instance => {
       val data = if (timePeriod.equals("1m")) {
         dao.getLastRawData(instance.instanceId, parameterId,sinceDateTime,untilDateTime).toList
       } else {
@@ -62,7 +55,7 @@ class Application(dao: Dao) extends Controller {
       data.map(e=> (e._1,(instance.name,e._2)))
     })
 
-    val flatten = datas.flatten
+    val flatten = data.flatten
     val groupBy = flatten.groupBy(e => (e._1))
     val list = groupBy.toList.sortBy(_._1)
 
@@ -75,9 +68,7 @@ class Application(dao: Dao) extends Controller {
         val tuple = map1.find(_._1.equals(instance.name)).getOrElse((instance.name, 0d))
         jsonObj = jsonObj + (tuple._1 -> JsNumber(tuple._2))
       }
-      println("jsonObj = " + jsonObj)
       jsonObj
-      //      print("date = " + date + " val = " + values.map(_._2).mkString(", ") + "; ")
     })
 
     val jsArray = JsArray(jsonList)
