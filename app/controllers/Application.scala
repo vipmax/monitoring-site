@@ -14,8 +14,6 @@ class Application(dao: Dao) extends Controller {
 
   def index () = Action {
     val projectsAndInstances = dao.getProjectsAndInstances()
-    Logger.debug("projects and instances = " + projectsAndInstances)
-
     Ok(views.html.main("Monitoring", projectsAndInstances))
   }
 
@@ -24,8 +22,6 @@ class Application(dao: Dao) extends Controller {
 
   def getParameters(instanceId: Int)= Action{
     val instanceParameters = dao.getInstanceParameters(instanceId)
-    Logger.debug(s"instance id $instanceId have ${instanceParameters.size} parameters = " + instanceParameters)
-
     Ok(views.html.paramerters(dao.getInstance(instanceId),instanceParameters))
   }
 
@@ -34,10 +30,9 @@ class Application(dao: Dao) extends Controller {
 
     val sinceDateTime = if (!sinceTime.equals("default")) new DateTime(new SimpleDateFormat("yyyy-MM-dd_HH:mm").parse(sinceTime)) else new DateTime(0)
     val untilDateTime = if (!untilTime.equals("default")) new DateTime(new SimpleDateFormat("yyyy-MM-dd_HH:mm").parse(untilTime)) else new DateTime()
-    println("sinceDateTime = " + sinceDateTime)
-    println("untilDateTime = " + untilDateTime)
 
-    val data = if(timePeriod.equals("1m")){dao.getLastRawData(instanceId, parameterId,sinceDateTime, untilDateTime).toList} else { dao.getLastAggregatedData(instanceId, parameterId, timePeriod,sinceDateTime,untilDateTime,valueType).toList}
+    val data = if(timePeriod.equals("1m")){ dao.getLastRawData(instanceId, parameterId,sinceDateTime, untilDateTime).toList }
+               else { dao.getLastAggregatedData(instanceId, parameterId, timePeriod,sinceDateTime,untilDateTime,valueType).toList }
 
     val jsArray = JsArray(data.map(v => obj("date" -> v._1, "value" -> v._2)))
     Logger.debug("sending json data = " + jsArray)
@@ -46,9 +41,7 @@ class Application(dao: Dao) extends Controller {
 
   def getProjectParameters(projectId: Int) = Action {
     val projectInstances = dao.getProjectInstances(projectId)
-    projectInstances.foreach(i => println(i + " "+dao.getInstanceParameters(i.instanceId)))
     val parameters = projectInstances.map(i => dao.getInstanceParameters(i.instanceId)).flatten.toSet
-    println("parameters = " + parameters)
     Ok(views.html.projectParameters(dao.getProject(projectId),projectInstances.map(_.name),parameters))
   }
 

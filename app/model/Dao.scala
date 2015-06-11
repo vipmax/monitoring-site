@@ -44,7 +44,7 @@ class Dao(node: String) {
               getParametersFromDb())
           }
           catch {
-            case e:com.datastax.driver.core.exceptions.NoHostAvailableException =>(Set[Project](),Set[Instance](),Set[Parameter]())
+            case e: com.datastax.driver.core.exceptions.NoHostAvailableException =>(Set[Project](),Set[Instance](),Set[Parameter]())
           }
         }
 
@@ -63,7 +63,7 @@ class Dao(node: String) {
 
   }
 
-  def  getLastRawData(instanceId: Int, parameterId: Int, sinceDateTime: DateTime, untilTime: DateTime) = {
+  def getLastRawData(instanceId: Int, parameterId: Int, sinceDateTime: DateTime, untilTime: DateTime) = {
 
     val (startTime,endTime) = {
       if(sinceDateTime.equals(new DateTime(0)))
@@ -79,10 +79,6 @@ class Dao(node: String) {
 
     lastRawData.toList.sortBy(_._1)
   }
-
-
-
-
   def getLastAggregatedData(instanceId: Int, parameterId: Int, timePeriod: String, sinceDateTime: DateTime,untilTime: DateTime, valueType: String) = {
     val projectId = getProjectId(instanceId)
 

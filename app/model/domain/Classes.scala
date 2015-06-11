@@ -3,7 +3,7 @@ package model.domain
 import org.joda.time.DateTime
 
 /**
- * Created by i00 on 4/12/15.
+ * Created by vipmax on 4/12/15.
  */
 
 case class AggregatedData (projectId: Int, instanceId: Int, parameterId: Int, time: DateTime, timePeriod: String,
